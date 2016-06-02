@@ -10,12 +10,21 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <pthread.h>
 
 #define PORT "3490"  // the port users will be connecting to
-
 #define BACKLOG 10	 // how many pending connections queue will hold
+#define BUFLENGTH 100	// length of the chat buffer
+#define ALIASLENGTH 10	// maximum length of the client's aliases
+#define CMDLENGTH 20	// maximum length of the server's commands
 
-// get sockaddr, IPv4 or IPv6:
+
+static int sockfd;									// socket listening for incoming connections
+int connectfd;							// socket to perform actions
+struct addrinfo hints;					// structure used to set the preferencies for servinfo
+struct addrinfo *servinfo;				// structure containing local data
+
+// get sockaddr, correctly formatted: IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa) {
 	if (sa->sa_family == AF_INET) {
 		return &(((struct sockaddr_in*)sa)->sin_addr);
@@ -24,14 +33,29 @@ void *get_in_addr(struct sockaddr *sa) {
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int main(void) {
-	int sockfd;								// socket listening for incoming connections
-	int connectfd;							// socket to perform actions
-	struct addrinfo hints;					// structure used to set the preferencies for servinfo
-	struct addrinfo *servinfo;				// structure containing local data
-	struct sigaction sa;
-	char s[INET6_ADDRSTRLEN];
+void *server_handler(void *param) {
+	char command[CMDLENGTH];
+	while(scanf("%s", command) == 1) {
+		if(!strcmp(command, "exit") || !strcmp(command, "quit")) {
+			/* clean up */
+			printf("Terminating server...\n");
+//			pthread_mutex_destroy(&clientlist_mutex);
+			close(sockfd); // close the listening socket
+			exit(0);
+		}
+//		else if(!strcmp(command, "list")) {
+//			pthread_mutex_lock(&clientlist_mutex);
+//			list_dump(&client_list);
+//			pthread_mutex_unlock(&clientlist_mutex);
+//		}
+		else {
+			fprintf(stderr, "Unknown command: %s\n", command);
+		}
+	}
+	return NULL;
+}
 
+int main(void) {
 
 	/******************************
 	 * Fill up local address
@@ -93,14 +117,22 @@ int main(void) {
 
 	// start listening
 	if (listen(sockfd, BACKLOG) == -1) {
-		perror("listen");
-		exit(1);
+		perror("server: listen");
+		return -1;
 	}
 	printf("server: waiting for connections...\n");
 
 	/******************************
-	 * Main while loop
+	 * Connections handling
 	 ******************************/
+
+	 /* initiate thread for server controlling */
+	printf("Starting admin interface...\n");
+	pthread_t control;
+	if(pthread_create(&control, NULL, server_handler, NULL) != 0) {
+		perror("server: interface creation");
+		return -1;
+	}
 
 	struct sockaddr_storage client_addr; 	// connector's address information
 	socklen_t sin_size;						// dimension of the connector's sockaddr structure
@@ -114,7 +146,7 @@ int main(void) {
 
 		// if an error occours, print an error and go on with the next iteration
 		if (new_fd == -1) {
-			perror("accept");
+			perror("server: accept");
 			printf("DEBUG: no client found\n");
 			continue;
 		}
