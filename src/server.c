@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -13,12 +14,33 @@
 #include <pthread.h>
 
 #define PORT "3490"  // the port users will be connecting to
-#define BACKLOG 10	 // how many pending connections queue will hold
-#define BUFLENGTH 100	// length of the chat buffer
-#define ALIASLENGTH 10	// maximum length of the client's aliases
-#define CMDLENGTH 20	// maximum length of the server's commands
+#define BACKLOG 8	 // how many pending connections queue will hold
+#define ALIASLEN 32	// maximum length of the client's aliases
+#define CMDLEN 32	// maximum length of the server's commands
+#define DEFAULTALIAS "Anonymous"	// default alias for new clients
+#define PAYLEN 1024	// payload size of a single packet
 
+/* Possible contenents of the packet's "action" field */
+#define EXIT 0
+#define ALIAS 1
+#define WHISPER 2
+#define SEND 3
 
+/* Structure containing the informations regarding a single connection with a client */
+struct ClientInfo {
+	pthread_t thread_ID; // thread's pointer
+	int sockfd; // socket file descriptor
+	char alias[ALIASLEN]; // client's alias
+};
+
+/* Single packet */
+struct Packet {
+    unsigned char action; // type of the packet
+    char alias[ALIASLEN]; // client's alias
+    char payload[PAYLEN]; // payload
+};
+
+/* FIELDS */
 static int sockfd;									// socket listening for incoming connections
 int connectfd;							// socket to perform actions
 struct addrinfo hints;					// structure used to set the preferencies for servinfo
@@ -34,7 +56,7 @@ void *get_in_addr(struct sockaddr *sa) {
 }
 
 void *server_handler(void *param) {
-	char command[CMDLENGTH];
+	char command[CMDLEN];
 	while(scanf("%s", command) == 1) {
 		if(!strcmp(command, "exit") || !strcmp(command, "quit")) {
 			/* clean up */
@@ -52,6 +74,32 @@ void *server_handler(void *param) {
 			fprintf(stderr, "Unknown command: %s\n", command);
 		}
 	}
+	return NULL;
+}
+
+void *client_handler(void *info) {
+	struct ClientInfo client_info = *(struct ClientInfo *)info;
+	struct Packet packet;
+	struct LLNODE *curr;
+	int sent;
+	printf("DEBUG: Thread started for the client named %s\n", client_info.alias);
+	while(1) {
+		/* Receive a packet of data from the client */
+		if(!recv(client_info.sockfd, (void *)&packet, sizeof(struct Packet), 0)) {
+			/* Connection with the client lost */
+			fprintf(stderr, "Connection lost from [%d] %s...\n", client_info.sockfd, client_info.alias);
+//			pthread_mutex_lock(&clientlist_mutex);
+//			list_delete(&client_list, &client_info); // remove the client from the linked list
+//			pthread_mutex_unlock(&clientlist_mutex);
+			break;
+		}
+		/* Print the entire contenent of the received packet */
+		printf("[%d] action_code:%d | %s | %s\n", client_info.sockfd, packet.action, packet.alias, packet.payload);
+	}
+
+	/*  */
+	close(client_info.sockfd);
+
 	return NULL;
 }
 
@@ -126,7 +174,7 @@ int main(void) {
 	 * Connections handling
 	 ******************************/
 
-	 /* initiate thread for server controlling */
+	/* initiate thread for server controlling */
 	printf("Starting admin interface...\n");
 	pthread_t control;
 	if(pthread_create(&control, NULL, server_handler, NULL) != 0) {
@@ -143,42 +191,27 @@ int main(void) {
 		sin_size = sizeof client_addr;
 		new_fd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size);
 
-
 		// if an error occours, print an error and go on with the next iteration
 		if (new_fd == -1) {
 			perror("server: accept");
-			printf("DEBUG: no client found\n");
 			continue;
 		}
-
-		printf("DEBUG: client found!\n");
 
 		// convert the client address to a printable format, then print a message
 		char s[INET6_ADDRSTRLEN];
 		inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof s);
 		printf("server: got connection from %s\n", s);
 
-		// fork the current process making a child process to handle the connection (see fork() documentation)
-		switch(fork()) {
-			// continuation for the child process
-			case 0 :
-				close(sockfd); // the child process doesn't need the listener socket
-				// send a simple string
-				if (send(new_fd, "Hello, world!", 13, 0) == -1) {
-					perror("send");
-				}
-				close(new_fd); // close the connection
-				return 0;
-				break;
-			// error case
-			case -1 :
-				perror("fork");
-				break;
-			// continuation for the parent process
-			default :
-				close(new_fd);  // the parent process doesn't need the connection socket
-		}
+		/* set the necessary data and start a thread to handle the connection */
+		struct  ClientInfo client_info;
+		client_info.sockfd = new_fd;
+		strcpy(client_info.alias, DEFAULTALIAS);
+//		pthread_mutex_lock(&clientlist_mutex);
+//		list_insert(&client_list, &client_info);
+//		pthread_mutex_unlock(&clientlist_mutex);
 
+		/* create a thread to handle the new client */
+		pthread_create(&client_info.thread_ID, NULL, client_handler, (void *)&client_info);
 
 	}
 
