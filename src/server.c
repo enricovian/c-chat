@@ -5,149 +5,21 @@
 #include <string.h>
 #include <stdint.h>
 #include <sys/types.h>
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
+
 #include <pthread.h>
 
-#define PORT "3490"  // the port users will be connecting to
-#define BACKLOG 8	 // how many pending connections queue will hold
-#define ALIASLEN 32	// maximum length of the client's aliases
-#define CMDLEN 32	// maximum length of the server's commands
-#define DEFAULTALIAS "Anonymous"	// default alias for new clients
-#define PAYLEN 1024	// payload size of a single packet
-#define MAXCLIENTS 64 // maximum number of clients connected
+/* Definitions about connection and protocol parameters */
+#include "networkdef.h"
 
-/* Possible contenents of the packet's "action" field */
-#define EXIT 0
-#define ALIAS 1
-#define MSG 2
-#define WHISPER 3
-#define SHOUT 4
-
-/******************************
-* STRUCTURE DEFINITION
- ******************************/
-
-/* Structure containing the informations regarding a single connection with a client */
-struct ClientInfo {
-	pthread_t thread_ID; // thread's pointer
-	int sockfd; // socket file descriptor
-	char alias[ALIASLEN]; // client's alias
-};
-
-/* Single packet */
-struct Packet {
-    unsigned char action; // type of the packet
-    char alias[ALIASLEN]; // client's alias
-    char payload[PAYLEN]; // payload
-};
-
-/******************************
- * END OF STRUCTURE DEFINITION
- ******************************/
-
-/******************************
- * LINKED LIST DEFINITION
- * Every node of the list contains informations about one client
- ******************************/
-
-/* Node of the list */
-struct LLNode {
-	struct ClientInfo client_info;
-	struct LLNode *next;
-};
-
-/* List */
-struct LinkedList {
-	struct LLNode *head, *tail;
-	int size;
-};
-
-/* Compare two ClientInfo struct, return 0 if they have the same connection socket */
-int compare(struct ClientInfo *a, struct ClientInfo *b) {
-	return a->sockfd - b->sockfd;
-}
-
-/* Initialize an empty list */
-void list_init(struct LinkedList *ll) {
-	ll->head = ll->tail = NULL;
-	ll->size = 0;
-}
-
-/* Insert an element to the list, return -1 if the list is full */
-int list_insert(struct LinkedList *ll, struct ClientInfo *cl_info) {
-	if(ll->size == MAXCLIENTS) return -1; // check if the list is full
-	/* If the list is empty, create the node and make head and tail point to it */
-	if(ll->head == NULL) {
-		ll->head = (struct LLNode *)malloc(sizeof(struct LLNode));
-		ll->head->client_info = *cl_info;
-		ll->head->next = NULL;
-		ll->tail = ll->head;
-	}
-	/* If the list isn't empty, create a new node and make the tail point to it */
-	else {
-		ll->tail->next = (struct LLNode *)malloc(sizeof(struct LLNode));
-		ll->tail->next->client_info = *cl_info;
-		ll->tail->next->next = NULL;
-		ll->tail = ll->tail->next;
-	}
-	ll->size++;
-	return 0;
-}
-
-/* Delete a client node from the list, return -1 if the element isn't found */
-int list_delete(struct LinkedList *ll, struct ClientInfo *cl_info) {
-	struct LLNode *curr, *tmp;
-	if(ll->head == NULL) return -1; // check if the structure is empty
-	/* Handle the case where the element to remove is the first */
-	if(!compare(cl_info, &ll->head->client_info)) {
-		tmp = ll->head; // store the element in a temporary variable to free the memory
-		ll->head = ll->head->next;
-		/* If the list is empty after the deletion, handle it correctly */
-		if(ll->head == NULL) {
-			ll->tail = ll->head;
-		}
-		free(tmp);
-		ll->size--;
-		return 0;
-	}
-	/* Search for the element to remove through the list */
-	for(curr = ll->head; curr->next != NULL; curr = curr->next) {
-		if(!compare(cl_info, &curr->next->client_info)) {
-			tmp = curr->next; // store the element in a temporary variable to free the memory
-			/* Handle the case where the element to remove is the last */
-			if(tmp == ll->tail) {
-				ll->tail = curr;
-				curr->next = NULL;
-			} else {
-				curr->next = curr->next->next;
-			}
-			free(tmp);
-			ll->size--;
-			return 0;
-		}
-	}
-	return -1;
-}
-
-/* Print the clients in a readable format */
-void list_dump(struct LinkedList *ll) {
-	struct LLNode *curr;
-	struct ClientInfo *cl_info;
-	printf("Connection count: %d\n", ll->size);
-	for(curr = ll->head; curr != NULL; curr = curr->next) {
-		cl_info = &curr->client_info;
-		printf("[%d] %s\n", cl_info->sockfd, cl_info->alias);
-	}
-}
-
-/******************************
- * END OF LINKED LIST
- ******************************/
+/* Implementation of a list containing the client's informations */
+#include "clientlist.h"
 
 /* FIELDS */
 static int sockfd;					// socket listening for incoming connections
