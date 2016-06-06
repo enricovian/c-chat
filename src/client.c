@@ -10,21 +10,11 @@
 
 #include <arpa/inet.h>
 
+#include "networkdef.h"
+
 #define PROGRAMNAME client // the name of the program
 
-#define PORT "3490" // the port client will be connecting to
-
 #define MAXDATASIZE 100 // length in bytes of the buffer where the message are received
-
-// get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-    }
-
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
 
 int main(int argc, char *argv[])
 {

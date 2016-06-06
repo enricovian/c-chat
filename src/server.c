@@ -30,15 +30,6 @@ struct LinkedList client_list;		// list of the connected clients
 pthread_mutex_t clientlist_mutex;	// mutual exclusion variable preventing concurrent
 									// edits to the client list
 
-// get sockaddr, correctly formatted: IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa) {
-	if (sa->sa_family == AF_INET) {
-		return &(((struct sockaddr_in*)sa)->sin_addr);
-	}
-
-	return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
-
 void *server_handler(void *param) {
 	char command[CMDLEN];
 	while(scanf("%s", command) == 1) {

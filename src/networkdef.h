@@ -13,10 +13,6 @@
 #define WHISPER 3
 #define SHOUT 4
 
-/******************************
-* STRUCTURE DEFINITION
- ******************************/
-
 /* Structure containing the informations regarding a single connection with a client */
 struct ClientInfo {
 	pthread_t thread_ID; // thread's pointer
@@ -30,3 +26,12 @@ struct Packet {
     char alias[ALIASLEN]; // client's alias
     char payload[PAYLEN]; // payload
 };
+
+/* get sockaddr correctly formatted: IPv4 or IPv6: */
+void *get_in_addr(struct sockaddr *sa) {
+	if (sa->sa_family == AF_INET) {
+		return &(((struct sockaddr_in*)sa)->sin_addr);
+	}
+
+	return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
