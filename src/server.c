@@ -168,7 +168,7 @@ int main(void) {
 	hints.ai_flags = AI_PASSIVE;		// use local IP address
 
 	int status;
-	if ((status = getaddrinfo(NULL, PORT, &hints, &servinfo)) != 0) {
+	if ((status = getaddrinfo(NULL, SERVERPORT, &hints, &servinfo)) != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
 		return -1;
 	}

@@ -1,7 +1,8 @@
-#define PORT "3490"  // the port users will be connecting to
+#define SERVERIP "localhost"	// the server's address
+#define SERVERPORT "3490"  // the port users will be connecting to
 #define BACKLOG 8	 // how many pending connections queue will hold
 #define ALIASLEN 32	// maximum length of the client's aliases
-#define CMDLEN 32	// maximum length of the server's commands
+#define CMDLEN 32	// maximum length of server's and client's commands
 #define DEFAULTALIAS "Anonymous"	// default alias for new clients
 #define PAYLEN 1024	// payload size of a single packet
 #define MAXCLIENTS 64 // maximum number of clients connected
@@ -13,7 +14,7 @@
 #define WHISPER 3
 #define SHOUT 4
 
-/* Structure containing the informations regarding a single connection with a client */
+/* Structure used by the server program containing the informations regarding a single connection with a client */
 struct ClientInfo {
 	pthread_t thread_ID; // thread's pointer
 	int sockfd; // socket file descriptor
@@ -22,9 +23,9 @@ struct ClientInfo {
 
 /* Single packet */
 struct Packet {
-    unsigned char action; // type of the packet
-    char alias[ALIASLEN]; // client's alias
-    char payload[PAYLEN]; // payload
+	unsigned char action; // type of the packet
+	char alias[ALIASLEN]; // client's alias
+	char payload[PAYLEN]; // payload
 };
 
 /* get sockaddr correctly formatted: IPv4 or IPv6: */
