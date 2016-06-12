@@ -160,6 +160,30 @@ int send_msg(char target[], char msg[]) {
 	return 0;
 }
 
+/* Send a message to every client connected */
+int broadcast_msg(char msg[]) {
+	struct Packet packet;
+	if(msg == NULL) {
+		return 0;
+	}
+	if(!connected) {
+		fprintf(stderr, "client: you are not connected\n");
+		return -1;
+	}
+	/* Build the packet */
+	memset(&packet, 0, sizeof(struct Packet)); // make sure the packet is clean
+	packet.action = SHOUT;
+	strcpy(packet.alias, myalias);
+	/* In the packet's payload insert the message */
+	strcpy(packet.payload, msg);
+	/* Send the packet */
+	if (send(serversfd, (void *)&packet, sizeof(struct Packet), 0) == -1) {
+		perror("client: send");
+		return -1;
+	}
+	return 0;
+}
+
 /* Interrupt the connection with the server */
 int logout() {
 	struct Packet packet;
@@ -209,67 +233,72 @@ int main(int argc, char *argv[])
 		if (input[ln] == '\n') {
 			input[ln] = '\0';
 		}
-		/* Create a copy of the input string because the method strtok modifies it */
-		char inputcpy[inputlen];
-		strcpy(inputcpy, input);
-		/* Read the first token of the string */
-		char command[CMDLEN]; // the first token must be the command
-		strcpy(command, strtok(inputcpy, " "));
-		/* Close the program */
-		if(!strncmp(command, "exit", 4) || !strncmp(command, "quit", 4)) {
-			/* Clean up and terminate the program */
-			printf("Terminating client...\n");
-			close(serversfd); // close the listening socket
-			break;
-		}
-		/* Login to the server, optionally add the desired alias as parameter */
-		else if(!strncmp(command, "login", 5)) {
-			/* Acquire, if present, the parameter */
-			char *alias = strtok(NULL, " ");
-			if(alias != NULL) {
-				/* Clean the current alias and set the new one */
-				memset(myalias, 0, sizeof(char) * ALIASLEN);
-				strcpy(myalias, alias);
-				login(myalias);
+		/* Check if the inserted string is a command or a chat message */
+		if (input[0] != '/') {
+			broadcast_msg(input);
+		} else {
+			/* Create a copy of the input string because the method strtok modifies it */
+			char inputcpy[inputlen];
+			strcpy(inputcpy, input);
+			/* Read the first token of the string */
+			char command[CMDLEN]; // the first token must be the command
+			strcpy(command, strtok(inputcpy, " "));
+			/* Close the program */
+			if(!strncmp(command, "/exit", 5) || !strncmp(command, "/quit", 5)) {
+				/* Clean up and terminate the program */
+				printf("Terminating client...\n");
+				close(serversfd); // close the listening socket
+				break;
+			}
+			/* Login to the server, optionally add the desired alias as parameter */
+			else if(!strncmp(command, "/login", 6)) {
+				/* Acquire, if present, the parameter */
+				char *alias = strtok(NULL, " ");
+				if(alias != NULL) {
+					/* Clean the current alias and set the new one */
+					memset(myalias, 0, sizeof(char) * ALIASLEN);
+					strcpy(myalias, alias);
+					login(myalias);
+				}
+				else {
+					login(NULL); // If there isn't a parameter, login with the default
+				}
+			}
+			else if(!strncmp(command, "/alias", 6)) {
+				/* Acquire the parameter */
+				char *alias = strtok(NULL, " ");
+				if(alias != NULL) {
+					/* Clean the current alias and set the new one */
+					memset(myalias, 0, sizeof(char) * ALIASLEN);
+					strcpy(myalias, alias);
+					setalias(myalias);
+				}
+				else {
+					fprintf(stderr, "Usage: \"alias [NEWALIAS]\"\n");
+				}
+			}
+			else if(!strncmp(input, "/whisp", 6)) {
+				/* Acquire the first parameter */
+				char *alias = strtok(NULL, " ");
+				/* Create a string containing just the message */
+				char msg[PAYLEN];
+				strcpy(msg, getmsg(input));
+				if(alias != NULL && msg != NULL) {
+					/* Make sure that the alias is a proper string */
+					alias[ALIASLEN-1] = '\0';
+					/* Send the message */
+					send_msg(alias, msg);
+				}
+				else {
+					fprintf(stderr, "Wrong format.\nUsage: \"whisp [RECIPIENT] [MESSAGE]\"\n");
+				}
+			}
+			else if(!strcmp(command, "/logout")) {
+				logout();
 			}
 			else {
-				login(NULL); // If there isn't a parameter, login with the default
+				fprintf(stderr, "Unknown command: %s\n", command);
 			}
-		}
-		else if(!strncmp(command, "alias", 5)) {
-			/* Acquire the parameter */
-			char *alias = strtok(NULL, " ");
-			if(alias != NULL) {
-				/* Clean the current alias and set the new one */
-				memset(myalias, 0, sizeof(char) * ALIASLEN);
-				strcpy(myalias, alias);
-				setalias(myalias);
-			}
-			else {
-				fprintf(stderr, "Usage: \"alias [NEWALIAS]\"\n");
-			}
-		}
-		else if(!strncmp(input, "whisp", 5)) {
-			/* Acquire the first parameter */
-			char *alias = strtok(NULL, " ");
-			/* Create a string containing just the message */
-			char msg[PAYLEN];
-			strcpy(msg, getmsg(input));
-			if(alias != NULL && msg != NULL) {
-				/* Make sure that the alias is a proper string */
-				alias[ALIASLEN-1] = '\0';
-				/* Send the message */
-				send_msg(alias, msg);
-			}
-			else {
-				fprintf(stderr, "Wrong format.\nUsage: \"whisp [RECIPIENT] [MESSAGE]\"\n");
-			}
-		}
-		else if(!strcmp(command, "logout")) {
-			logout();
-		}
-		else {
-			fprintf(stderr, "Unknown command: %s\n", command);
 		}
 	}
 	return 0;
