@@ -136,12 +136,10 @@ int send_msg(char target[], char msg[]) {
 	if(target == NULL || msg == NULL) {
 		return 0;
 	}
-
 	if(!connected) {
 		fprintf(stderr, "client: you are not connected\n");
 		return -1;
 	}
-
 	/* Build the packet */
 	memset(&packet, 0, sizeof(struct Packet)); // make sure the packet is clean
 	packet.action = WHISPER;
@@ -151,7 +149,7 @@ int send_msg(char target[], char msg[]) {
 	targetlen = strlen(target);
 	strcpy(&packet.payload[targetlen], " "); // add a space to separate the target from the message's body
 	strcpy(&packet.payload[targetlen+1], msg);
-	printf("DEBUG: the packet's payload is %s\n", packet.payload);
+	printf("DEBUG: the packet's payload is \"%s\"\n", packet.payload);
 	/* Send the packet */
 	if (send(serversfd, (void *)&packet, sizeof(struct Packet), 0) == -1) {
 		perror("client: send");
@@ -215,7 +213,6 @@ int main(int argc, char *argv[])
 		/* Read the first token of the string */
 		char command[CMDLEN]; // the first token must be the command
 		strcpy(command, strtok(inputcpy, " "));
-		printf("DEBUG: the input is %s\n the command is %s\n", input, command);
 		/* Close the program */
 		if(!strncmp(command, "exit", 4) || !strncmp(command, "quit", 4)) {
 			/* Clean up and terminate the program */
@@ -264,10 +261,9 @@ int main(int argc, char *argv[])
 			/* Create a string containing just the message */
 			char msg[PAYLEN];
 			strcpy(msg, getmsg(input));
-			printf("DEBUG: the message is \"%s\"\n", msg);
 			if(alias != NULL && msg != NULL) {
 				/* Make sure that the alias is a proper string */
-				alias[ALIASLEN] = '\0';
+				alias[ALIASLEN-1] = '\0';
 				/* Send the message */
 				send_msg(alias, msg);
 			}
