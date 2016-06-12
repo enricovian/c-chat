@@ -115,8 +115,10 @@ int login(char name[]) {
 		serversfd = sockfd;
 		if(name != NULL) {
 			setalias(name);
+		} else {
+			strcpy(myalias, DEFAULTALIAS);
 		}
-		printf("client: logged in as %s\n", name);
+		printf("client: logged in as %s\n", myalias);
 		/* Start a thread to handle the packages' reception */
 		pthread_t receive;
 		pthread_create(&receive, NULL, receiver, NULL);
@@ -207,7 +209,7 @@ int main(int argc, char *argv[])
 		if (input[ln] == '\n') {
 			input[ln] = '\0';
 		}
-		/* Create a copy of th input string because the method strtok modify it */
+		/* Create a copy of the input string because the method strtok modifies it */
 		char inputcpy[inputlen];
 		strcpy(inputcpy, input);
 		/* Read the first token of the string */
@@ -223,11 +225,8 @@ int main(int argc, char *argv[])
 		/* Login to the server, optionally add the desired alias as parameter */
 		else if(!strncmp(command, "login", 5)) {
 			/* Acquire, if present, the parameter */
-			char alias[ALIASLEN];
-			strcpy(alias, strtok(NULL, " "));
+			char *alias = strtok(NULL, " ");
 			if(alias != NULL) {
-				/* Make sure that the alias is a proper string */
-				alias[ALIASLEN] = '\0';
 				/* Clean the current alias and set the new one */
 				memset(myalias, 0, sizeof(char) * ALIASLEN);
 				strcpy(myalias, alias);
@@ -239,11 +238,8 @@ int main(int argc, char *argv[])
 		}
 		else if(!strncmp(command, "alias", 5)) {
 			/* Acquire the parameter */
-			char alias[ALIASLEN];
-			strcpy(alias, strtok(NULL, " "));
+			char *alias = strtok(NULL, " ");
 			if(alias != NULL) {
-				/* Make sure that the alias is a proper string */
-				alias[ALIASLEN] = '\0';
 				/* Clean the current alias and set the new one */
 				memset(myalias, 0, sizeof(char) * ALIASLEN);
 				strcpy(myalias, alias);
@@ -255,9 +251,7 @@ int main(int argc, char *argv[])
 		}
 		else if(!strncmp(input, "whisp", 5)) {
 			/* Acquire the first parameter */
-			char alias[ALIASLEN];
-			strcpy(alias, strtok(NULL, " "));
-			int aliaslen =  strlen(alias);
+			char *alias = strtok(NULL, " ");
 			/* Create a string containing just the message */
 			char msg[PAYLEN];
 			strcpy(msg, getmsg(input));
