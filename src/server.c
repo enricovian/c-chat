@@ -15,6 +15,8 @@
 
 #include <pthread.h>
 
+#include <unistd.h> // just to try sleep() for debug
+
 /* Definitions about connection and protocol parameters */
 #include "networkdef.h"
 
@@ -132,6 +134,29 @@ void *client_handler(void *info) {
 						perror("server: send");
 					}
 				}
+				pthread_mutex_unlock(&clientlist_mutex);
+				break;
+			/* Client's list request */
+			case LIST_Q :
+				pthread_mutex_lock(&clientlist_mutex);
+				int size = list_size(&client_list);
+				char **list_str;
+				list_str = list_clients(&client_list);
+				/* Build a new packet containing the list */
+				struct Packet answer_packet;
+				memset(&answer_packet, 0, sizeof(struct Packet));
+				answer_packet.action = LIST_A;
+				answer_packet.len = size; // number of clients in the list
+				strcpy(answer_packet.alias, packet.alias);
+				/* Insert the client's aliases in the packet's payload */
+				for(int i = 0; i < size; i++) {
+					memcpy(&answer_packet.payload[ALIASLEN*i], list_str[i], ALIASLEN*sizeof(char));
+				}
+				/* Send the packet */
+				if (send(client_info.sockfd, (void *)&answer_packet, sizeof(struct Packet), 0) == -1) {
+					perror("server: send");
+				}
+				free(list_str); // deallocate the memory used for the list
 				pthread_mutex_unlock(&clientlist_mutex);
 				break;
 			/* Terminate the connection */

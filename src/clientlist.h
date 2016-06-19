@@ -87,3 +87,24 @@ void list_dump(struct LinkedList *ll) {
 		printf("[%d] %s\n", cl_info->sockfd, cl_info->alias);
 	}
 }
+
+/* Returns the size of the linked list */
+int list_size(struct LinkedList *ll) {
+	return ll->size;
+}
+
+/* Returns an array of strings containing the client's aliases.
+This method allocate the memory necessary to store the list, so make sure to deallocate
+using the pointer returned*/
+char **list_clients(struct LinkedList *ll) {
+	char ** list_str = malloc(ll->size * sizeof(char*));
+	struct LLNode *curr;
+	struct ClientInfo *cl_info;
+	int i = 0;
+	for(curr = ll->head; curr != NULL; curr = curr->next) {
+		list_str[i] = malloc(ALIASLEN * sizeof(char));
+		strcpy(list_str[i++], curr->client_info.alias);
+		printf("DEBUG: Element of the list: %s.\n", list_str[i-1]);
+	}
+	return list_str;
+}

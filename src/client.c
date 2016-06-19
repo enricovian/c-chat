@@ -34,8 +34,22 @@ void *receiver() {
 			close(serversfd);
 			break;
 		}
-		/* Display the message on screen. TODO: create a dedicate method */
-		printf("[%s]: %s\n", packet.alias, packet.payload);
+		switch (packet.action) {
+			/* Message to display received */
+			case MSG :
+				/* Display the message on screen. TODO: create a dedicate method */
+				printf("[%s]: %s\n", packet.alias, packet.payload);
+				break;
+			/* List of clients received */
+			case LIST_A : ;
+				/* Display the clients connected to the server */
+				printf("There are %d clients connected:\n", packet.len);
+				for(int i = 0; i < packet.len; i++) {
+					printf("[%d] %s\n", i+1, &packet.payload[ALIASLEN*i]);
+				}
+				break;
+		}
+
 		/* Clean the packet */
 		memset(&packet, 0, sizeof(struct Packet));
 	}
@@ -185,6 +199,25 @@ int broadcast_msg(char msg[]) {
 }
 
 /* Interrupt the connection with the server */
+int askforlist() {
+	struct Packet packet;
+
+	if(!connected) {
+		fprintf(stderr, "client: you are not connected\n");
+		return -1;
+	}
+
+	/* Build the packet */
+	memset(&packet, 0, sizeof(struct Packet)); // make sure the packet is clean
+	packet.action = LIST_Q;
+	strcpy(packet.alias, myalias);
+	if (send(serversfd, (void *)&packet, sizeof(struct Packet), 0) == -1) {
+		perror("client: send");
+		return -1;
+	}
+}
+
+/* Interrupt the connection with the server */
 int logout() {
 	struct Packet packet;
 
@@ -261,7 +294,7 @@ int main(int argc, char *argv[])
 					login(myalias);
 				}
 				else {
-					login(NULL); // If there isn't a parameter, login with the default
+					login(NULL); // If there isn't a parameter, login with the default alias
 				}
 			}
 			else if(!strncmp(command, "/alias", 6)) {
@@ -292,6 +325,9 @@ int main(int argc, char *argv[])
 				else {
 					fprintf(stderr, "Wrong format.\nUsage: \"whisp [RECIPIENT] [MESSAGE]\"\n");
 				}
+			}
+			else if(!strncmp(input, "/list", 5)) {
+				askforlist();
 			}
 			else if(!strcmp(command, "/logout")) {
 				logout();
