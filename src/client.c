@@ -48,6 +48,10 @@ void *receiver() {
 					printf("[%d] %s\n", i+1, &packet.payload[ALIASLEN*i]);
 				}
 				break;
+			/* There are no clients with the alias specifie in the whisper command */
+			case UNF :
+				printf("Client \"%s\" not found. Type \\list to see the clients connected\n", packet.alias);
+				break;
 		}
 
 		/* Clean the packet */
@@ -252,26 +256,39 @@ char *getmsg(char *input) {
 	return &input[i];
 }
 
+/* Remove extra character from the buffer of input, returns the last character
+read */
+char flushinput(FILE *input) {
+	char ch;
+	while (((ch = fgetc(input)) != '\n') && (ch != EOF)) ;
+	return ch;
+}
+
 int main(int argc, char *argv[])
 {
 	printf("Setting up the client, write \"help\" to see a list of commands\n");
 	/* Create the buffer where to store the user's input */
-	int inputlen = CMDLEN + ALIASLEN; // set the input buffer length properly
+	int buflen = 64; // PAYLEN; // set the input buffer length properly
 	while(1) {
 		/* Read a string from standard input */
-		char input[inputlen];
-		fgets(input, inputlen, stdin);
-		/* remove the newline character */
-		size_t ln = strlen(input) - 1;
-		if (input[ln] == '\n') {
-			input[ln] = '\0';
+		char input[buflen];
+		fgets(input, buflen, stdin);
+		/* If the last char gathered is the newline character remove it,
+		elsewhere the input is too long and must be cleaned from the input
+		buffer at the end of the cycle */
+		size_t inputlen = strlen(input) - 1;
+		int buf_overflow = 0;
+		if (input[inputlen] == '\n') {
+			input[inputlen] = '\0';
+		} else {
+			buf_overflow = 1;
 		}
 		/* Check if the inserted string is a command or a chat message */
 		if (input[0] != '/') {
 			broadcast_msg(input);
 		} else {
 			/* Create a copy of the input string because the method strtok modifies it */
-			char inputcpy[inputlen];
+			char inputcpy[buflen];
 			strcpy(inputcpy, input);
 			/* Read the first token of the string */
 			char command[CMDLEN]; // the first token must be the command
@@ -288,6 +305,8 @@ int main(int argc, char *argv[])
 				/* Acquire, if present, the parameter */
 				char *alias = strtok(NULL, " ");
 				if(alias != NULL) {
+					/* If the alias is too long, truncate it */
+					alias[ALIASLEN] = '\0';
 					/* Clean the current alias and set the new one */
 					memset(myalias, 0, sizeof(char) * ALIASLEN);
 					strcpy(myalias, alias);
@@ -301,6 +320,8 @@ int main(int argc, char *argv[])
 				/* Acquire the parameter */
 				char *alias = strtok(NULL, " ");
 				if(alias != NULL) {
+					/* If the alias is too long, truncate it */
+					alias[ALIASLEN] = '\0';
 					/* Clean the current alias and set the new one */
 					memset(myalias, 0, sizeof(char) * ALIASLEN);
 					strcpy(myalias, alias);
@@ -335,6 +356,10 @@ int main(int argc, char *argv[])
 			else {
 				fprintf(stderr, "Unknown command: %s\n", command);
 			}
+		}
+		/* If there are extra characters in the input's buffer, remove them */
+		if (buf_overflow) {
+			flushinput(stdin);
 		}
 	}
 	return 0;

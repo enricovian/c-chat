@@ -90,12 +90,13 @@ void *client_handler(void *info) {
 			/* Send a message to a specific client */
 			case WHISPER : ; // empty statement necessary to compile
 				/* Acquire the target client */
-				int i;
 				char target[ALIASLEN];
+				int i;
 				for(i = 0; packet.payload[i] != ' '; i++);
 				packet.payload[i++] = '\0'; // replace the space after the target's alias with a termination
 				strcpy(target, packet.payload);
 				/* Find the target client and send the message */
+				int found = 0; // variable that indicates if the specified client has been found
 				pthread_mutex_lock(&clientlist_mutex);
 				for(curr = client_list.head; curr != NULL; curr = curr->next) {
 					if(strcmp(target, curr->client_info.alias) == 0) {
@@ -103,6 +104,7 @@ void *client_handler(void *info) {
 						if(!compare(&curr->client_info, &client_info)) {
 							continue;
 						}
+						found = 1;
 						/* Build a new packet only containing the message */
 						struct Packet msgpacket;
 						memset(&msgpacket, 0, sizeof(struct Packet));
@@ -115,6 +117,17 @@ void *client_handler(void *info) {
 					}
 				}
 				pthread_mutex_unlock(&clientlist_mutex);
+				/* If the specified user has not been found, send back to the client an UNF (User Not Found) packet */
+				if (!found) {
+					struct Packet errpacket;
+					memset(&errpacket, 0, sizeof(struct Packet));
+					errpacket.action = UNF;
+					/* The alias field contains the client not found */
+					strcpy(errpacket.alias, target);
+					if (send(client_info.sockfd, (void *)&errpacket, sizeof(struct Packet), 0) == -1) {
+						perror("server: send");
+					}
+				}
 				break;
 			/* Send a message to every client connected */
 			case SHOUT :

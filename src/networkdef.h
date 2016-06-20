@@ -7,7 +7,7 @@
 #define CMDLEN 32					// maximum length of server's and client's commands
 #define DEFAULTALIAS "Anonymous"	// default alias for new clients
 #define PAYLEN 2048					// payload size of a single packet, to
-									// contain the alias list, it should be at 
+									// contain the alias list, it should be at
 									// least ALIASLEN*MAXCLIENTS to contain the
 									// client's list
 #define MAXCLIENTS 64 				// maximum number of clients connected
@@ -21,6 +21,7 @@
 #define LIST_Q 5	// request to the server to obtain the client list
 #define LIST_A 6	// packet containing the client list, is often sent in
 					// response to LIST_Q
+#define UNF 7		// User Not Found, error packet
 
 /* Structure used by the server program containing the informations regarding a single connection with a client */
 struct ClientInfo {
