@@ -32,21 +32,41 @@ struct LinkedList client_list;		// list of the connected clients
 pthread_mutex_t clientlist_mutex;	// mutual exclusion variable preventing concurrent
 									// edits to the client list
 
+/* Display a text file containing the possible commands */
+int displayhelp() {
+	char c;
+	FILE *file;
+	file = fopen("../helpfiles/server_help.txt", "r");
+	if (file == NULL) {
+		perror("client: fopen, error opening help file");
+		return(-1);
+	}
+	while ((c = getc(file)) != EOF) {
+		putchar(c);
+	}
+	fclose(file);
+	return 0;
+}
+
 void *server_handler(void *param) {
 	char command[CMDLEN];
 	while(scanf("%s", command) == 1) {
-		if(!strcmp(command, "exit") || !strcmp(command, "quit")) {
-			/* Clean up and terminate the program */
+		/* Clean up and terminate the program */
+		if(!strcmp(command, "/exit") || !strcmp(command, "/quit")) {
 			printf("Terminating server...\n");
 			pthread_mutex_destroy(&clientlist_mutex); // delete the mutex
 			close(sockfd); // close the listening socket
 			exit(0);
 		}
-		else if(!strcmp(command, "list")) {
-			/* Print a dump of the current client list */
+		/* Print a dump of the current client list */
+		else if(!strcmp(command, "/list")) {
 			pthread_mutex_lock(&clientlist_mutex);
 			list_dump(&client_list);
 			pthread_mutex_unlock(&clientlist_mutex);
+		}
+		/* Print an help text */
+		else if(!strcmp(command, "/help")) {
+			displayhelp();
 		}
 		else {
 			fprintf(stderr, "Unknown command: %s\n", command);

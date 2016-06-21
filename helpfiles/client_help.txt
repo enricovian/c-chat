@@ -1,0 +1,17 @@
+The available commands are:
+/help
+	display this view
+/quit
+	quit the program
+/login
+	login to the server with the default alias
+/login [ALIAS]
+	login to the server with the [ALIAS] alias
+/alias [ALIAS]
+	change alias to [ALIAS]
+/whisp [TARGET] [MSG]
+	send the message [MSG] to the client with alias [TARGET]
+/list
+	view a list of the clients currently connected
+/logout
+	disconnect from the server

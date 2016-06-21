@@ -50,7 +50,7 @@ void *receiver() {
 				break;
 			/* There are no clients with the alias specifie in the whisper command */
 			case UNF :
-				printf("Client \"%s\" not found. Type \\list to see the clients connected\n", packet.alias);
+				printf("Client \"%s\" not found. Type /list to see the clients connected\n", packet.alias);
 				break;
 		}
 
@@ -243,6 +243,22 @@ int logout() {
 	connected = 0;
 }
 
+/* Display a text file containing the possible commands */
+int displayhelp() {
+	char c;
+	FILE *file;
+	file = fopen("../helpfiles/client_help.txt", "r");
+	if (file == NULL) {
+		perror("client: fopen, error opening help file");
+		return(-1);
+	}
+	while ((c = getc(file)) != EOF) {
+		putchar(c);
+	}
+	fclose(file);
+	return 0;
+}
+
 /* Return a pointer to the begin of the message that the user wants to send
 input is the string inserted from the user in standard input.
 The method processes string formatted like this: "[COMMAND] [ALIAS] [MESSAGE]"
@@ -274,8 +290,8 @@ int main(int argc, char *argv[])
 		char input[buflen];
 		fgets(input, buflen, stdin);
 		/* If the last char gathered is the newline character remove it,
-		elsewhere the input is too long and must be cleaned from the input
-		buffer at the end of the cycle */
+		elsewhere the input is too long and the input buffer must be cleaned at
+		the end of the cycle */
 		size_t inputlen = strlen(input) - 1;
 		int buf_overflow = 0;
 		if (input[inputlen] == '\n') {
@@ -285,6 +301,7 @@ int main(int argc, char *argv[])
 		}
 		/* Check if the inserted string is a command or a chat message */
 		if (input[0] != '/') {
+			/* Send a chat message to every client connected */
 			broadcast_msg(input);
 		} else {
 			/* Create a copy of the input string because the method strtok modifies it */
@@ -316,6 +333,7 @@ int main(int argc, char *argv[])
 					login(NULL); // If there isn't a parameter, login with the default alias
 				}
 			}
+			/* Change the alias */
 			else if(!strncmp(command, "/alias", 6)) {
 				/* Acquire the parameter */
 				char *alias = strtok(NULL, " ");
@@ -331,6 +349,7 @@ int main(int argc, char *argv[])
 					fprintf(stderr, "Usage: \"alias [NEWALIAS]\"\n");
 				}
 			}
+			/* Send a message to a specific client */
 			else if(!strncmp(input, "/whisp", 6)) {
 				/* Acquire the first parameter */
 				char *alias = strtok(NULL, " ");
@@ -347,11 +366,17 @@ int main(int argc, char *argv[])
 					fprintf(stderr, "Wrong format.\nUsage: \"whisp [RECIPIENT] [MESSAGE]\"\n");
 				}
 			}
+			/* List the clients currently connected */
 			else if(!strncmp(input, "/list", 5)) {
 				askforlist();
 			}
+			/* Terminate the connection */
 			else if(!strcmp(command, "/logout")) {
 				logout();
+			}
+			/* Print an help text */
+			else if(!strcmp(command, "/help")) {
+				displayhelp();
 			}
 			else {
 				fprintf(stderr, "Unknown command: %s\n", command);
