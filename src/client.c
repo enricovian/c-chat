@@ -1,22 +1,26 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-
-#include <arpa/inet.h>
-
-#include <pthread.h>
-
 /* Definitions about connection and protocol parameters */
 #include "networkdef.h"
 
 /* Utility methods to handle network objects */
 #include "networkutil.h"
+
+/* Standard libraries */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+
+/* Networking libraries */
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+/* Thread library */
+#include <pthread.h>
+
 
 /* Connection status: 1 if connected with a server, 0 elsewhere */
 int connected;

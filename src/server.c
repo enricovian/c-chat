@@ -1,11 +1,21 @@
+#include "server.h"
+
+/* Utility methods to handle network objects */
+#include "networkutil.h"
+
+/* Implementation of a list containing the client's informations */
+#include "clientlist.h"
+
+/* Standard libraries */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <stdint.h>
-#include <sys/types.h>
 
+/* Networking libraries */
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -13,15 +23,9 @@
 #include <sys/wait.h>
 #include <signal.h>
 
+/* Thread library */
 #include <pthread.h>
 
-#include <unistd.h> // just to try sleep() for debug
-
-/* Definitions about connection and protocol parameters */
-#include "networkdef.h"
-
-/* Implementation of a list containing the client's informations */
-#include "clientlist.h"
 
 /* FIELDS */
 static int sockfd;					// socket listening for incoming connections

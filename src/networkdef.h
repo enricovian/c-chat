@@ -1,8 +1,6 @@
-/* Server informations */
-#define SERVERIP "localhost"		// the server's address
-#define SERVERPORT "3490"  			// port used by the server for incoming connections
+/* Necessary for the definition of pthread_t */
+#include <pthread.h>
 
-#define BACKLOG 8	 				// how many pending connections queue will hold
 #define ALIASLEN 32					// maximum length of the client's aliases
 #define CMDLEN 32					// maximum length of server's and client's commands
 #define DEFAULTALIAS "Anonymous"	// default alias for new clients
@@ -11,6 +9,7 @@
 									// least ALIASLEN*MAXCLIENTS to contain the
 									// client's list
 #define MAXCLIENTS 64 				// maximum number of clients connected
+
 
 /* Possible contenents of the packet's "action" field */
 #define EXIT 0
@@ -37,12 +36,3 @@ struct Packet {
 	int len; // length of the payload, necessary only in some packets
 	char payload[PAYLEN]; // payload
 };
-
-/* get sockaddr correctly formatted: IPv4 or IPv6: */
-void *get_in_addr(struct sockaddr *sa) {
-	if (sa->sa_family == AF_INET) {
-		return &(((struct sockaddr_in*)sa)->sin_addr);
-	}
-
-	return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
