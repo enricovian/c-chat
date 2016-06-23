@@ -1,3 +1,14 @@
+/**
+ * @file server.c
+ * @brief Server chat application for the c-chat project.
+ *
+ * @author Enrico Vianello (<enrico.vianello.1@studenti.unipd.it>)
+ * @version 1.0
+ * @since 1.0
+ *
+ * @copyright Copyright (c) 2016-2017, Enrico Vianello
+ */
+
 #include "server.h"
 
 /* Utility methods to handle network objects */
@@ -26,17 +37,175 @@
 /* Thread library */
 #include <pthread.h>
 
+/**
+ * Socket listening for incoming connections.
+ */
+static int sockfd;
+/**
+ * Socket to perform actions.
+ */
+int connectfd;
+/**
+ * Structure used to set the preferencies for servinfo.
+ */
+struct addrinfo hints;
+/**
+ * Structure containing local data.
+ */
+struct addrinfo *servinfo;
+/**
+ * List of the connected clients.
+ */
+struct LinkedList client_list;
+/**
+ * Mutual exclusion variable preventing concurrent edits to the client list.
+ */
+pthread_mutex_t clientlist_mutex;
 
-/* FIELDS */
-static int sockfd;					// socket listening for incoming connections
-int connectfd;						// socket to perform actions
-struct addrinfo hints;				// structure used to set the preferencies for servinfo
-struct addrinfo *servinfo;			// structure containing local data
-struct LinkedList client_list;		// list of the connected clients
-pthread_mutex_t clientlist_mutex;	// mutual exclusion variable preventing concurrent
-									// edits to the client list
+/**
+* @brief Display the available commands.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
+int displayhelp();
 
-/* Display a text file containing the possible commands */
+/**
+* @brief Routine that listens for server's commands.
+*
+* @param param Pointer to a structure containing execution parameters
+* (currently unused, it can be safely set as \c NULL pointer).
+*
+* @return Always a \c NULL pointer.
+*/
+void *server_handler(void *param);
+
+/**
+* @brief Routine that handles the connection with a client.
+*
+* @param info Pointer to the \c ClientInfo structure relative to the connection
+* that has to be handled.
+*
+* @return Always a \c NULL pointer.
+*/
+void *client_handler(void *info);
+
+int main(void) {
+	/* initialize client list */
+	list_init(&client_list);
+	/* initiate mutex */
+	pthread_mutex_init(&clientlist_mutex, NULL);
+
+	/******************************
+	 * Set up the listener socket
+	 ******************************/
+
+	memset(&hints, 0, sizeof hints);	// make sure the struct is empty
+	hints.ai_family = AF_UNSPEC;		// use either IPv4 or IPv6
+	hints.ai_socktype = SOCK_STREAM;	// use TCP protocol for data transmission
+	hints.ai_flags = AI_PASSIVE;		// use local IP address
+
+	int status;
+	if ((status = getaddrinfo(NULL, SERVERPORT, &hints, &servinfo)) != 0) {
+		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+		return -1;
+	}
+
+	// loop through all the elements returned by getaddrinfo and bind the first possible
+	struct addrinfo *p;	// pointer used to inspect servinfo
+	for(p = servinfo; p != NULL; p = p->ai_next) {
+		// create the socket
+		if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+			perror("server: socket");
+			printf("DEBUG: socket creation caused an error\n");
+			continue;	// in case of error with this address, try with another iteraction
+		}
+		// allow other sockets to bind this port when not listening
+		int yes = 1;
+		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+			perror("server: setsockopt");
+			printf("DEBUG: socket setting caused an error\n");
+			return -1;
+		}
+		// bind the socket to the address
+		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+			close(sockfd);
+			perror("server: bind");
+			printf("DEBUG: binding socket to address caused an error\n");
+			continue;	// in case of error with this address, try with another iteraction
+		}
+
+		break; // when there are no more addresses, or one has been successful, exit
+	}
+
+	freeaddrinfo(servinfo);
+
+	// if the socket hasn't been successfully binded, print an error and exit
+	if (p == NULL)  {
+		fprintf(stderr, "server: failed to bind\n");
+		return -1;
+	}
+
+	// start listening
+	if (listen(sockfd, BACKLOG) == -1) {
+		perror("server: listen");
+		return -1;
+	}
+	printf("server: waiting for connections...\n");
+
+	/******************************
+	 * Connections handling
+	 ******************************/
+
+	/* initiate thread for server controlling */
+	printf("Starting admin interface...\n");
+	pthread_t control;
+	if(pthread_create(&control, NULL, server_handler, NULL) != 0) {
+		perror("server: interface creation");
+		return -1;
+	}
+
+	struct sockaddr_storage client_addr;	// connector's address information
+	socklen_t sin_size;						// dimension of the connector's sockaddr structure
+	int new_fd = -1;						// temporary file descriptor for the incoming connections
+
+	while(1) {  // main accept() loop
+		// block the server till a pending connection request is present, then accept it
+		sin_size = sizeof client_addr;
+		new_fd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size);
+
+		// if an error occours, print an error and go on with the next iteration
+		if (new_fd == -1) {
+			perror("server: accept");
+			continue;
+		}
+
+		// convert the client address to a printable format, then print a message
+		char s[INET6_ADDRSTRLEN];
+		inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof s);
+		printf("server: got connection from %s\n", s);
+
+		/* Set the client data */
+		struct  ClientInfo client_info;
+		client_info.sockfd = new_fd;
+		strcpy(client_info.alias, DEFAULTALIAS);
+
+		/* Add the new client to the client list */
+		pthread_mutex_lock(&clientlist_mutex);
+		list_insert(&client_list, &client_info);
+		pthread_mutex_unlock(&clientlist_mutex);
+
+		/* Create a thread to handle the new client */
+		pthread_create(&client_info.thread_ID, NULL, client_handler, (void *)&client_info);
+	}
+
+	return 0;
+}
+
+/**
+* @brief Display the available commands.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 int displayhelp() {
 	char c;
 	FILE *file;
@@ -52,6 +221,14 @@ int displayhelp() {
 	return 0;
 }
 
+/**
+* @brief Routine that listens for server's commands.
+*
+* @param param Pointer to a structure containing execution parameters
+* (currently unused, it can be safely set as \c NULL pointer).
+*
+* @return Always a \c NULL pointer.
+*/
 void *server_handler(void *param) {
 	char command[CMDLEN];
 	while(scanf("%s", command) == 1) {
@@ -79,6 +256,14 @@ void *server_handler(void *param) {
 	return NULL;
 }
 
+/**
+* @brief Routine that handles the connection with a client.
+*
+* @param info Pointer to the \c ClientInfo structure relative to the connection
+* that has to be handled.
+*
+* @return Always a \c NULL pointer.
+*/
 void *client_handler(void *info) {
 	struct ClientInfo client_info = *(struct ClientInfo *)info;
 	struct Packet packet;
@@ -212,116 +397,4 @@ void *client_handler(void *info) {
 	close(client_info.sockfd);
 
 	return NULL;
-}
-
-int main(void) {
-	/* initialize client list */
-	list_init(&client_list);
-	/* initiate mutex */
-	pthread_mutex_init(&clientlist_mutex, NULL);
-
-	/******************************
-	 * Set up the listener socket
-	 ******************************/
-
-	memset(&hints, 0, sizeof hints);	// make sure the struct is empty
-	hints.ai_family = AF_UNSPEC;		// use either IPv4 or IPv6
-	hints.ai_socktype = SOCK_STREAM;	// use TCP protocol for data transmission
-	hints.ai_flags = AI_PASSIVE;		// use local IP address
-
-	int status;
-	if ((status = getaddrinfo(NULL, SERVERPORT, &hints, &servinfo)) != 0) {
-		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-		return -1;
-	}
-
-	// loop through all the elements returned by getaddrinfo and bind the first possible
-	struct addrinfo *p;	// pointer used to inspect servinfo
-	for(p = servinfo; p != NULL; p = p->ai_next) {
-		// create the socket
-		if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-			perror("server: socket");
-			printf("DEBUG: socket creation caused an error\n");
-			continue;	// in case of error with this address, try with another iteraction
-		}
-		// allow other sockets to bind this port when not listening
-		int yes = 1;
-		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-			perror("server: setsockopt");
-			printf("DEBUG: socket setting caused an error\n");
-			return -1;
-		}
-		// bind the socket to the address
-		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-			close(sockfd);
-			perror("server: bind");
-			printf("DEBUG: binding socket to address caused an error\n");
-			continue;	// in case of error with this address, try with another iteraction
-		}
-
-		break; // when there are no more addresses, or one has been successful, exit
-	}
-
-	freeaddrinfo(servinfo);
-
-	// if the socket hasn't been successfully binded, print an error and exit
-	if (p == NULL)  {
-		fprintf(stderr, "server: failed to bind\n");
-		return -1;
-	}
-
-	// start listening
-	if (listen(sockfd, BACKLOG) == -1) {
-		perror("server: listen");
-		return -1;
-	}
-	printf("server: waiting for connections...\n");
-
-	/******************************
-	 * Connections handling
-	 ******************************/
-
-	/* initiate thread for server controlling */
-	printf("Starting admin interface...\n");
-	pthread_t control;
-	if(pthread_create(&control, NULL, server_handler, NULL) != 0) {
-		perror("server: interface creation");
-		return -1;
-	}
-
-	struct sockaddr_storage client_addr;	// connector's address information
-	socklen_t sin_size;						// dimension of the connector's sockaddr structure
-	int new_fd = -1;						// temporary file descriptor for the incoming connections
-
-	while(1) {  // main accept() loop
-		// block the server till a pending connection request is present, then accept it
-		sin_size = sizeof client_addr;
-		new_fd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size);
-
-		// if an error occours, print an error and go on with the next iteration
-		if (new_fd == -1) {
-			perror("server: accept");
-			continue;
-		}
-
-		// convert the client address to a printable format, then print a message
-		char s[INET6_ADDRSTRLEN];
-		inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof s);
-		printf("server: got connection from %s\n", s);
-
-		/* Set the client data */
-		struct  ClientInfo client_info;
-		client_info.sockfd = new_fd;
-		strcpy(client_info.alias, DEFAULTALIAS);
-
-		/* Add the new client to the client list */
-		pthread_mutex_lock(&clientlist_mutex);
-		list_insert(&client_list, &client_info);
-		pthread_mutex_unlock(&clientlist_mutex);
-
-		/* Create a thread to handle the new client */
-		pthread_create(&client_info.thread_ID, NULL, client_handler, (void *)&client_info);
-	}
-
-	return 0;
 }

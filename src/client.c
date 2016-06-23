@@ -1,3 +1,14 @@
+/**
+ * @file client.c
+ * @brief Client chat application for the c-chat project.
+ *
+ * @author Enrico Vianello (<enrico.vianello.1@studenti.unipd.it>)
+ * @version 1.0
+ * @since 1.0
+ *
+ * @copyright Copyright (c) 2016-2017, Enrico Vianello
+ */
+
 /* Definitions about connection and protocol parameters */
 #include "networkdef.h"
 
@@ -22,54 +33,122 @@
 #include <pthread.h>
 
 
-/* Connection status: 1 if connected with a server, 0 elsewhere */
+/**
+ * Connection status: 1 if connected with a server, 0 elsewhere
+ */
 int connected;
-/* Socket file descriptor of the connection with the server */
+/**
+ * Socket file descriptor of the connection with the server
+ */
 int serversfd;
-/* Alias of the client */
+/**
+ * Alias of the client
+ */
 char myalias[ALIASLEN];
-/* Server's IP */
+/**
+ * Server's IP
+ */
 char server_ip[INET6_ADDRSTRLEN];
-/* Server's port */
+/**
+ * Server's port
+ */
 char server_port[6];
 
-/* Routine that constantly listens for incoming packets.
-The method returns a void pointer because it is needed to create a thread */
+/**
+* @brief Routine that constantly listens for incoming packets.
+*
+* @return Always a \c NULL pointer.
+*/
 static void *receiver();
 
-/* Establish a connection with the server.
-Return -1 if an error occurred, the socket file descriptor elsewhere */
+/**
+* @brief Establish a connection with the server application.
+*
+* @param ip String containing the server's IP (IPv4 or IPv6).
+* @param port String containing the server's listening port.
+*
+* @return Always a \c NULL pointer.
+*/
 static int connect_server(char *ip, char *port);
 
-/* Send a request to the server to change your own alias to name */
+/**
+* @brief Send a request to the server to change your own alias.
+*
+* @param name String containing the new alias.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int setalias(char name[]);
 
-/* Login to the server, if name is not NULL, the alias is set accordingly */
+/**
+* @brief Login to a server specifying its address and the desired alias.
+*
+* @param ip String containing the server's IP (IPv4 or IPv6).
+* @param port String containing the server's listening port.
+* @param name String containing the desired alias.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int login(char *ip, char *port, char *name);
 
-/* Send a message to a client specifying his alias */
+/**
+* @brief Send a message to a specific client.
+*
+* @param target String containing the target client's alias.
+* @param msg String containing the message.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int send_msg(char target[], char msg[]);
 
-/* Send a message to every client connected */
+/**
+* @brief Send a message to every client connected to the server.
+*
+* @param msg String containing the message.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int broadcast_msg(char msg[]);
 
-/* Interrupt the connection with the server */
+/**
+* @brief Interrupt the connection with the server.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int askforlist();
 
-/* Interrupt the connection with the server */
+/**
+* @brief Interrupt the connection with the server.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int logout();
 
-/* Display a text file containing the possible commands */
+/**
+* @brief Display the available commands.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int displayhelp();
 
-/* Return a pointer to the begin of the message that the user wants to send
-input is the string inserted from the user in standard input.
-The method processes string formatted like this: "[COMMAND] [ALIAS] [MESSAGE]"
-Returns NULL if an error occours or the string is in a wrong format*/
+/**
+* @brief Return a pointer to the begin of the message.
+*
+* This method processes string formatted in the following way:
+* "[COMMAND] [ALIAS] [MESSAGE]"
+*
+* @return The pointer to the begin of the message.
+* \c NULL pointer if an error occours or the string is in a wrong format.
+*/
 static char *getmsg(char *input);
 
-/* Remove extra character from the buffer of input, returns the last character
-read */
+/**
+* @brief Remove extra characters from the buffer of input.
+*
+* @param input \c FILE whose buffer must be cleaned.
+*
+* @return The last character removed from the buffer.
+*/
 static char flushinput(FILE *input);
 
 int main(int argc, char *argv[])
@@ -191,8 +270,11 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-/* Routine that constantly listens for incoming packets.
-The method returns a void pointer because it is needed to create a thread */
+/**
+* @brief Routine that constantly listens for incoming packets.
+*
+* @return Always a \c NULL pointer.
+*/
 static void *receiver() {
 	struct Packet packet; // this packet will be used to contain the received data
 	printf("DEBUG: Listener set [%d]\n", serversfd);
@@ -230,8 +312,14 @@ static void *receiver() {
 	return NULL;
 }
 
-/* Establish a connection with the server.
-Return -1 if an error occurred, the socket file descriptor elsewhere */
+/**
+* @brief Establish a connection with the server application.
+*
+* @param ip String containing the server's IP (IPv4 or IPv6).
+* @param port String containing the server's listening port.
+*
+* @return Always a \c NULL pointer.
+*/
 static int connect_server(char *ip, char *port) {
 	/* Prepare the server's address */
 	struct addrinfo hints;
@@ -264,7 +352,13 @@ static int connect_server(char *ip, char *port) {
 	return 0;
 }
 
-/* Send a request to the server to change your own alias to name */
+/**
+* @brief Send a request to the server to change your own alias.
+*
+* @param name String containing the new alias.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int setalias(char name[]) {
 	if(!connected) {
 		fprintf(stderr, "client: you are not connected\n");
@@ -284,7 +378,15 @@ static int setalias(char name[]) {
 	return 0;
 }
 
-/* Login to the server, if name is not NULL, the alias is set accordingly */
+/**
+* @brief Login to a server specifying its address and the desired alias.
+*
+* @param ip String containing the server's IP (IPv4 or IPv6).
+* @param port String containing the server's listening port.
+* @param name String containing the desired alias.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int login(char *ip, char *port, char *name) {
 	if (connected) {
 		fprintf(stderr, "client: you are already connected to server at %s:%s\n", server_ip, server_port);
@@ -318,7 +420,14 @@ static int login(char *ip, char *port, char *name) {
 	return 0;
 }
 
-/* Send a message to a client specifying his alias */
+/**
+* @brief Send a message to a specific client.
+*
+* @param target String containing the target client's alias.
+* @param msg String containing the message.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int send_msg(char target[], char msg[]) {
 	int sent, targetlen;
 	struct Packet packet;
@@ -348,7 +457,13 @@ static int send_msg(char target[], char msg[]) {
 	return 0;
 }
 
-/* Send a message to every client connected */
+/**
+* @brief Send a message to every client connected to the server.
+*
+* @param msg String containing the message.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int broadcast_msg(char msg[]) {
 	struct Packet packet;
 	if(msg == NULL) {
@@ -372,7 +487,11 @@ static int broadcast_msg(char msg[]) {
 	return 0;
 }
 
-/* Interrupt the connection with the server */
+/**
+* @brief Interrupt the connection with the server.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int askforlist() {
 	struct Packet packet;
 
@@ -391,7 +510,11 @@ static int askforlist() {
 	}
 }
 
-/* Interrupt the connection with the server */
+/**
+* @brief Interrupt the connection with the server.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int logout() {
 	struct Packet packet;
 
@@ -415,7 +538,11 @@ static int logout() {
 	server_port[0] = '\0';
 }
 
-/* Display a text file containing the possible commands */
+/**
+* @brief Display the available commands.
+*
+* @return \c 0 if successful, \c -1 if an error occurred.
+*/
 static int displayhelp() {
 	char c;
 	FILE *file;
@@ -431,10 +558,15 @@ static int displayhelp() {
 	return 0;
 }
 
-/* Return a pointer to the begin of the message that the user wants to send
-input is the string inserted from the user in standard input.
-The method processes string formatted like this: "[COMMAND] [ALIAS] [MESSAGE]"
-Returns NULL if an error occours or the string is in a wrong format*/
+/**
+* @brief Return a pointer to the begin of the message.
+*
+* This method processes string formatted in the following way:
+* "[COMMAND] [ALIAS] [MESSAGE]"
+*
+* @return The pointer to the begin of the message.
+* \c NULL pointer if an error occours or the string is in a wrong format.
+*/
 static char *getmsg(char *input) {
 	int i = 0;
 	/* Skip the COMMAND */
@@ -444,8 +576,13 @@ static char *getmsg(char *input) {
 	return &input[i];
 }
 
-/* Remove extra character from the buffer of input, returns the last character
-read */
+/**
+* @brief Remove extra characters from the buffer of input.
+*
+* @param input \c FILE whose buffer must be cleaned.
+*
+* @return The last character removed from the buffer.
+*/
 static char flushinput(FILE *input) {
 	char ch;
 	while (((ch = fgetc(input)) != '\n') && (ch != EOF)) ;
