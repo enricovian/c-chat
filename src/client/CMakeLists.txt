@@ -1,6 +1,7 @@
 # Source files
 set(client_source_files
 	client.c
+	client.h
 )
 
 # Generate the executable from the source files

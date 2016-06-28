@@ -8,6 +8,7 @@
  *
  * @copyright Copyright (c) 2016-2017, Enrico Vianello
  */
+#include "client.h"
 
 /* Definitions about connection and protocol parameters */
 #include "networkdef.h"
@@ -290,7 +291,7 @@ static void *receiver() {
 			/* Message to display received */
 			case MSG :
 				/* Display the message on screen. TODO: create a dedicate method */
-				printf("[%s]: %s\n", packet.alias, packet.payload);
+				printf(KYEL "[%s]" KNRM ": %s\n", packet.alias, packet.payload);
 				break;
 			/* List of clients received */
 			case LIST_A : ;

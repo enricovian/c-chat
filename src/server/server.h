@@ -12,6 +12,6 @@
 /* The server's address */
 #define SERVERIP "localhost"
 /* Port used by the server for incoming connections */
-#define SERVERPORT "3490"
+#define SERVERPORT "3495"
 /* How many pending connections queue will hold */
 #define BACKLOG 8
