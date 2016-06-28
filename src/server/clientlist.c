@@ -1,6 +1,7 @@
 /**
  * @file clientlist.c
- * @brief Linked list implementation where every node represent a connection with a client.
+ * @brief Linked list implementation where every node represent a connection
+ * with a client.
  *
  * @author Enrico Vianello (<enrico.vianello.1@studenti.unipd.it>)
  * @version 1.0
@@ -50,14 +51,16 @@ void list_init(struct LinkedList *ll) {
 */
 int list_insert(struct LinkedList *ll, struct ClientInfo *cl_info) {
 	if(ll->size == MAXCLIENTS) return -1; // check if the list is full
-	/* If the list is empty, create the node and make head and tail point to it */
+	/* If the list is empty, create the node and make head and tail
+	point to it */
 	if(ll->head == NULL) {
 		ll->head = (struct LLNode *)malloc(sizeof(struct LLNode));
 		ll->head->client_info = *cl_info;
 		ll->head->next = NULL;
 		ll->tail = ll->head;
 	}
-	/* If the list isn't empty, create a new node and make the tail point to it */
+	/* If the list isn't empty, create a new node and make the tail
+	point to it */
 	else {
 		ll->tail->next = (struct LLNode *)malloc(sizeof(struct LLNode));
 		ll->tail->next->client_info = *cl_info;
@@ -82,7 +85,8 @@ int list_delete(struct LinkedList *ll, struct ClientInfo *cl_info) {
 	if(ll->head == NULL) return -1; // check if the structure is empty
 	/* Handle the case where the element to remove is the first */
 	if(!compare(cl_info, &ll->head->client_info)) {
-		tmp = ll->head; // store the element in a temporary variable to free the memory
+		/* store the element in a temporary variable to free the memory */
+		tmp = ll->head;
 		ll->head = ll->head->next;
 		/* If the list is empty after the deletion, handle it correctly */
 		if(ll->head == NULL) {
@@ -95,7 +99,8 @@ int list_delete(struct LinkedList *ll, struct ClientInfo *cl_info) {
 	/* Search for the element to remove through the list */
 	for(curr = ll->head; curr->next != NULL; curr = curr->next) {
 		if(!compare(cl_info, &curr->next->client_info)) {
-			tmp = curr->next; // store the element in a temporary variable to free the memory
+			/* store the element in a temporary variable to free the memory */
+			tmp = curr->next;
 			/* Handle the case where the element to remove is the last */
 			if(tmp == ll->tail) {
 				ll->tail = curr;
@@ -156,7 +161,6 @@ char **list_clients(struct LinkedList *ll) {
 	for(curr = ll->head; curr != NULL; curr = curr->next) {
 		list_str[i] = malloc(ALIASLEN * sizeof(char));
 		strcpy(list_str[i++], curr->client_info.alias);
-		printf("DEBUG: Element of the list: %s.\n", list_str[i-1]);
 	}
 	return list_str;
 }

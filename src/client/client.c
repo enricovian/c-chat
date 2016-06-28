@@ -154,7 +154,8 @@ static char flushinput(FILE *input);
 
 int main(int argc, char *argv[])
 {
-	printf("Setting up the client, write \"help\" to see a list of commands\n");
+	printf(
+		"Setting up the client, write \"/help\" to see a list of commands\n");
 	/* Create the buffer where to store the user's input */
 	int buflen = 64; // PAYLEN; // set the input buffer length properly
 	while(1) {
@@ -176,14 +177,16 @@ int main(int argc, char *argv[])
 			/* Send a chat message to every client connected */
 			broadcast_msg(input);
 		} else {
-			/* Create a copy of the input string because the method strtok modifies it */
+			/* Create a copy of the input string because the method strtok
+			modifies it */
 			char inputcpy[buflen];
 			strcpy(inputcpy, input);
 			/* Read the first token of the string */
 			char command[CMDLEN]; // the first token must be the command
 			strcpy(command, strtok(inputcpy, " "));
 			/* Close the program */
-			if(!strncmp(command, "/exit", 5) || !strncmp(command, "/quit", 5)) {
+			if (!strncmp(command, "/exit", 5) ||
+				!strncmp(command, "/quit", 5)) {
 				/* Clean up and terminate the program */
 				printf("Terminating client...\n");
 				close(serversfd); // close the listening socket
@@ -208,10 +211,14 @@ int main(int argc, char *argv[])
 						login(server_ip, server_port, myalias);
 					}
 					else {
-						login(server_ip, server_port, NULL); // If there isn't a parameter, login with the default alias
+						/* If there isn't a parameter, login with the default
+						alias */
+						login(server_ip, server_port, NULL);
 					}
 				} else {
-					fprintf(stderr, "Usage: \"/login [SERVER_IP] [SERVER_PORT] [ALIAS]\"\n");
+					fprintf(stderr,
+						"Usage: \"/login [SERVER_IP] [SERVER_PORT] [ALIAS]\"\n"
+					);
 				}
 			}
 			/* Change the alias */
@@ -244,7 +251,8 @@ int main(int argc, char *argv[])
 					send_msg(alias, msg);
 				}
 				else {
-					fprintf(stderr, "Usage: \"/whisp [RECIPIENT] [MESSAGE]\"\n");
+					fprintf(stderr,
+						"Usage: \"/whisp [RECIPIENT] [MESSAGE]\"\n");
 				}
 			}
 			/* List the clients currently connected */
@@ -277,11 +285,12 @@ int main(int argc, char *argv[])
 * @return Always a \c NULL pointer.
 */
 static void *receiver() {
-	struct Packet packet; // this packet will be used to contain the received data
-	printf("DEBUG: Listener set [%d]\n", serversfd);
+	/* This packet will be used to contain the received data */
+	struct Packet packet;
 	while(1) {
 		if(!(recv(serversfd, (void *)&packet, sizeof(struct Packet), 0))) {
-			/* When recv returns 0, it means that the connection was interrupted */
+			/* When recv returns 0, it means that the connection was
+			interrupted */
 			fprintf(stderr, "client: connection lost from server\n");
 			connected = 0;
 			close(serversfd);
@@ -290,7 +299,7 @@ static void *receiver() {
 		switch (packet.action) {
 			/* Message to display received */
 			case MSG :
-				/* Display the message on screen. TODO: create a dedicate method */
+				/* Display the message on screen */
 				printf(KYEL "[%s]" KNRM ": %s\n", packet.alias, packet.payload);
 				break;
 			/* List of clients received */
@@ -301,9 +310,12 @@ static void *receiver() {
 					printf("[%d] %s\n", i+1, &packet.payload[ALIASLEN*i]);
 				}
 				break;
-			/* There are no clients with the alias specifie in the whisper command */
+			/* There are no clients with the alias specifie in the whisper
+			command */
 			case UNF :
-				printf("Client \"%s\" not found. Type /list to see the clients connected\n", packet.alias);
+				printf(
+					"Client \"%s\" not found. Type /list to see the clients connected\n",
+					packet.alias);
 				break;
 		}
 
@@ -330,13 +342,15 @@ static int connect_server(char *ip, char *port) {
 	hints.ai_socktype = SOCK_STREAM;
 	int status;
 	if ((status = getaddrinfo(ip, port, &hints, &servinfo)) != 0) {
-		fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+		fprintf(stderr,
+			"client: getaddrinfo error: %s\n", gai_strerror(status));
 		return -1;
 	}
 
 	/* open a socket */
 	int newfd;
-	if((newfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
+	if((newfd = socket(servinfo->ai_family, servinfo->ai_socktype,
+		servinfo->ai_protocol)) == -1) {
 		perror("client: socket");
 		return -1;
 	}
@@ -362,7 +376,7 @@ static int connect_server(char *ip, char *port) {
 */
 static int setalias(char name[]) {
 	if(!connected) {
-		fprintf(stderr, "client: you are not connected\n");
+		fprintf(stderr, "You are not connected\n");
 		return -1;
 	}
 
@@ -390,13 +404,15 @@ static int setalias(char name[]) {
 */
 static int login(char *ip, char *port, char *name) {
 	if (connected) {
-		fprintf(stderr, "client: you are already connected to server at %s:%s\n", server_ip, server_port);
+		fprintf(stderr,
+			"You are already connected to server at %s:%s\n",
+			server_ip, server_port);
 		return -1;
 	}
 	/* Temporary variable containing the socket file declarator of the connection */
 	int sockfd;
 	if ((sockfd = connect_server(ip, port)) == -1) {
-		fprintf(stderr, "client: error occurred in method connect_server\nclient: connection failed\n");
+		fprintf(stderr, "client: connection failed\n");
 		return -1;
 	}
 	if(sockfd >= 0) {
@@ -417,7 +433,7 @@ static int login(char *ip, char *port, char *name) {
 	}
 	strcpy(server_ip, ip);
 	strcpy(server_port, port);
-	printf("client: connected to server at %s:%s as %s\n", server_ip, server_port, myalias);
+	printf("Connected to server at %s:%s as %s\n", server_ip, server_port, myalias);
 	return 0;
 }
 
@@ -437,7 +453,7 @@ static int send_msg(char target[], char msg[]) {
 		return 0;
 	}
 	if(!connected) {
-		fprintf(stderr, "client: you are not connected\n");
+		fprintf(stderr, "You are not connected\n");
 		return -1;
 	}
 	/* Build the packet */
@@ -447,9 +463,9 @@ static int send_msg(char target[], char msg[]) {
 	/* In the packet's payload insert the target's alias and the message */
 	strcpy(packet.payload, target);
 	targetlen = strlen(target);
-	strcpy(&packet.payload[targetlen], " "); // add a space to separate the target from the message's body
+	/* Add a space to separate the target from the message's body */
+	strcpy(&packet.payload[targetlen], " ");
 	strcpy(&packet.payload[targetlen+1], msg);
-	printf("DEBUG: the packet's payload is \"%s\"\n", packet.payload);
 	/* Send the packet */
 	if (send(serversfd, (void *)&packet, sizeof(struct Packet), 0) == -1) {
 		perror("client: send");
@@ -471,7 +487,7 @@ static int broadcast_msg(char msg[]) {
 		return 0;
 	}
 	if(!connected) {
-		fprintf(stderr, "client: you are not connected\n");
+		fprintf(stderr, "You are not connected\n");
 		return -1;
 	}
 	/* Build the packet */
@@ -497,7 +513,7 @@ static int askforlist() {
 	struct Packet packet;
 
 	if(!connected) {
-		fprintf(stderr, "client: you are not connected\n");
+		fprintf(stderr, "You are not connected\n");
 		return -1;
 	}
 
@@ -520,7 +536,7 @@ static int logout() {
 	struct Packet packet;
 
 	if(!connected) {
-		fprintf(stderr, "client: you are not connected\n");
+		fprintf(stderr, "You are not connected\n");
 		return -1;
 	}
 

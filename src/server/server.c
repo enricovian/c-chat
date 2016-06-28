@@ -95,67 +95,6 @@ int main(void) {
 	/* initiate mutex */
 	pthread_mutex_init(&clientlist_mutex, NULL);
 
-	/******************************
-	 * Set up the listener socket
-	 ******************************/
-
-	memset(&hints, 0, sizeof hints);	// make sure the struct is empty
-	hints.ai_family = AF_UNSPEC;		// use either IPv4 or IPv6
-	hints.ai_socktype = SOCK_STREAM;	// use TCP protocol for data transmission
-	hints.ai_flags = AI_PASSIVE;		// use local IP address
-
-	int status;
-	if ((status = getaddrinfo(NULL, SERVERPORT, &hints, &servinfo)) != 0) {
-		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-		return -1;
-	}
-
-	// loop through all the elements returned by getaddrinfo and bind the first possible
-	struct addrinfo *p;	// pointer used to inspect servinfo
-	for(p = servinfo; p != NULL; p = p->ai_next) {
-		// create the socket
-		if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-			perror("server: socket");
-			printf("DEBUG: socket creation caused an error\n");
-			continue;	// in case of error with this address, try with another iteraction
-		}
-		// allow other sockets to bind this port when not listening
-		int yes = 1;
-		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-			perror("server: setsockopt");
-			printf("DEBUG: socket setting caused an error\n");
-			return -1;
-		}
-		// bind the socket to the address
-		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-			close(sockfd);
-			perror("server: bind");
-			printf("DEBUG: binding socket to address caused an error\n");
-			continue;	// in case of error with this address, try with another iteraction
-		}
-
-		break; // when there are no more addresses, or one has been successful, exit
-	}
-
-	freeaddrinfo(servinfo);
-
-	// if the socket hasn't been successfully binded, print an error and exit
-	if (p == NULL)  {
-		fprintf(stderr, "server: failed to bind\n");
-		return -1;
-	}
-
-	// start listening
-	if (listen(sockfd, BACKLOG) == -1) {
-		perror("server: listen");
-		return -1;
-	}
-	printf("server: waiting for connections...\n");
-
-	/******************************
-	 * Connections handling
-	 ******************************/
-
 	/* initiate thread for server controlling */
 	printf("Starting admin interface...\n");
 	pthread_t control;
@@ -164,25 +103,96 @@ int main(void) {
 		return -1;
 	}
 
-	struct sockaddr_storage client_addr;	// connector's address information
-	socklen_t sin_size;						// dimension of the connector's sockaddr structure
-	int new_fd = -1;						// temporary file descriptor for the incoming connections
+	/******************************
+	 * Set up the listener socket
+	 ******************************/
+
+	memset(&hints, 0, sizeof hints);	// make sure the struct is empty
+	hints.ai_family = AF_UNSPEC;		// use either IPv4 or IPv6
+	hints.ai_socktype = SOCK_STREAM;	// use TCP protocol for data
+										// transmission
+	hints.ai_flags = AI_PASSIVE;		// use local IP address
+
+	int status;
+	if ((status = getaddrinfo(NULL, SERVERPORT, &hints, &servinfo)) != 0) {
+		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+		return -1;
+	}
+
+	/* loop through all the elements returned by getaddrinfo and bind the first
+	possible */
+	struct addrinfo *p;	// pointer used to inspect servinfo
+	for(p = servinfo; p != NULL; p = p->ai_next) {
+		/* create the socket */
+		if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol))
+			== -1) {
+			perror("server: socket");
+			/* in case of error with this address, try with another
+			iteraction */
+			continue;
+		}
+		/* allow other sockets to bind this port when not listening */
+		int yes = 1;
+		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int))
+		 	== -1) {
+			perror("server: setsockopt");
+			return -1;
+		}
+		/* bind the socket to the address */
+		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+			close(sockfd);
+			perror("server: bind");
+			/* in case of error with this address, try with another
+			iteraction */
+			continue;
+		}
+		/* when there are no more addresses or one has been successful, exit */
+		break;
+	}
+	freeaddrinfo(servinfo);
+
+	/* if the socket hasn't been successfully binded print an error and exit */
+	if (p == NULL)  {
+		fprintf(stderr, "server: failed to bind\n");
+		return -1;
+	}
+
+	/* start listening */
+	if (listen(sockfd, BACKLOG) == -1) {
+		perror("server: listen");
+		return -1;
+	}
+	printf("Waiting for connections...\n");
+
+	/******************************
+	 * Connections handling
+	 ******************************/
+	/* connector's address information */
+	struct sockaddr_storage client_addr;
+	/* dimension of the connector's sockaddr structure */
+	socklen_t sin_size;
+	/* temporary file descriptor for the incoming connections */
+	int new_fd = -1;
 
 	while(1) {  // main accept() loop
-		// block the server till a pending connection request is present, then accept it
+		/* block the server till a pending connection request is present,
+		then accept it */
 		sin_size = sizeof client_addr;
 		new_fd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size);
 
-		// if an error occours, print an error and go on with the next iteration
+		/* if an error occours, print an error and go on with the next
+		iteration */
 		if (new_fd == -1) {
 			perror("server: accept");
 			continue;
 		}
 
-		// convert the client address to a printable format, then print a message
+		/* convert the client address to a printable format, then print a
+		message */
 		char s[INET6_ADDRSTRLEN];
-		inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof s);
-		printf("server: got connection from %s\n", s);
+		inet_ntop(client_addr.ss_family,
+			get_in_addr((struct sockaddr *)&client_addr), s, sizeof s);
+		printf("Got connection from %s\n", s);
 
 		/* Set the client data */
 		struct  ClientInfo client_info;
@@ -195,7 +205,12 @@ int main(void) {
 		pthread_mutex_unlock(&clientlist_mutex);
 
 		/* Create a thread to handle the new client */
-		pthread_create(&client_info.thread_ID, NULL, client_handler, (void *)&client_info);
+		pthread_create(
+			&client_info.thread_ID,
+			NULL,
+			client_handler,
+			(void *)&client_info
+		);
 	}
 
 	return 0;
@@ -268,24 +283,27 @@ void *client_handler(void *info) {
 	struct ClientInfo client_info = *(struct ClientInfo *)info;
 	struct Packet packet;
 	struct LLNode *curr;
-	printf("DEBUG: Thread started for the client named %s\n", client_info.alias);
 	while(1) {
 		/* Receive a packet of data from the client */
-		if(!recv(client_info.sockfd, (void *)&packet, sizeof(struct Packet), 0)) {
+		if(!recv(client_info.sockfd, (void *)&packet, sizeof(struct Packet),
+			0)) {
 			/* Connection with the client lost */
-			fprintf(stderr, "Connection lost from [%d] %s\n", client_info.sockfd, client_info.alias);
+			fprintf(stderr, "Connection lost from [%d] %s\n",
+				client_info.sockfd, client_info.alias);
 			/* Remove the client from the client list */
 			pthread_mutex_lock(&clientlist_mutex);
-			list_delete(&client_list, &client_info); // remove the client from the linked list
+			/* remove the client from the linked list */
+			list_delete(&client_list, &client_info);
 			pthread_mutex_unlock(&clientlist_mutex);
 			break;
-			printf("DEBUG: This shouldn't be printed if a client thread is closed");
 		}
-		printf("Packet received:[%d] action_code=%d | %s | %s\n", client_info.sockfd, packet.action, packet.alias, packet.payload);
+		printf("Packet received:[%d] action_code=%d | %s | %s\n",
+			client_info.sockfd, packet.action, packet.alias, packet.payload);
 		switch (packet.action) {
 			/* Change the client's alias */
 			case ALIAS :
-				printf("server: user #%d is changing his alias from '%s' to '%s'\n", client_info.sockfd, client_info.alias, packet.alias);
+				printf("User #%d is changing his alias from '%s' to '%s'\n",
+					client_info.sockfd, client_info.alias, packet.alias);
 				pthread_mutex_lock(&clientlist_mutex);
 				/* Search the client in the list and edit his alias */
 				for(curr = client_list.head; curr != NULL; curr = curr->next) {
@@ -302,10 +320,12 @@ void *client_handler(void *info) {
 				char target[ALIASLEN];
 				int i;
 				for(i = 0; packet.payload[i] != ' '; i++);
-				packet.payload[i++] = '\0'; // replace the space after the target's alias with a termination
+				/* replace the space after the target's alias with a
+				termination */
+				packet.payload[i++] = '\0';
 				strcpy(target, packet.payload);
 				/* Find the target client and send the message */
-				int found = 0; // variable that indicates if the specified client has been found
+				int found = 0; // 1 if the client has been found
 				pthread_mutex_lock(&clientlist_mutex);
 				for(curr = client_list.head; curr != NULL; curr = curr->next) {
 					if(strcmp(target, curr->client_info.alias) == 0) {
@@ -319,21 +339,26 @@ void *client_handler(void *info) {
 						memset(&msgpacket, 0, sizeof(struct Packet));
 						msgpacket.action = MSG;
 						strcpy(msgpacket.alias, packet.alias);
-						strcpy(msgpacket.payload, &packet.payload[i]); // the payload of the new packet contains just the message
-						if (send(curr->client_info.sockfd, (void *)&msgpacket, sizeof(struct Packet), 0) == -1) {
+						/* the payload of the new packet contains just the
+						message */
+						strcpy(msgpacket.payload, &packet.payload[i]);
+						if (send(curr->client_info.sockfd, (void *)&msgpacket,
+							sizeof(struct Packet), 0) == -1) {
 							perror("server: send");
 						}
 					}
 				}
 				pthread_mutex_unlock(&clientlist_mutex);
-				/* If the specified user has not been found, send back to the client an UNF (User Not Found) packet */
+				/* If the specified user has not been found, send back to the
+				client an UNF (User Not Found) packet */
 				if (!found) {
 					struct Packet errpacket;
 					memset(&errpacket, 0, sizeof(struct Packet));
 					errpacket.action = UNF;
 					/* The alias field contains the client not found */
 					strcpy(errpacket.alias, target);
-					if (send(client_info.sockfd, (void *)&errpacket, sizeof(struct Packet), 0) == -1) {
+					if (send(client_info.sockfd, (void *)&errpacket,
+						sizeof(struct Packet), 0) == -1) {
 						perror("server: send");
 					}
 				}
@@ -352,7 +377,8 @@ void *client_handler(void *info) {
 					msgpacket.action = MSG;
 					strcpy(msgpacket.alias, packet.alias);
 					strcpy(msgpacket.payload, packet.payload);
-					if (send(curr->client_info.sockfd, (void *)&msgpacket, sizeof(struct Packet), 0) == -1) {
+					if (send(curr->client_info.sockfd, (void *)&msgpacket,
+						sizeof(struct Packet), 0) == -1) {
 						perror("server: send");
 					}
 				}
@@ -372,10 +398,12 @@ void *client_handler(void *info) {
 				strcpy(answer_packet.alias, packet.alias);
 				/* Insert the client's aliases in the packet's payload */
 				for(int i = 0; i < size; i++) {
-					memcpy(&answer_packet.payload[ALIASLEN*i], list_str[i], ALIASLEN*sizeof(char));
+					memcpy(&answer_packet.payload[ALIASLEN*i], list_str[i],
+						ALIASLEN*sizeof(char));
 				}
 				/* Send the packet */
-				if (send(client_info.sockfd, (void *)&answer_packet, sizeof(struct Packet), 0) == -1) {
+				if (send(client_info.sockfd, (void *)&answer_packet,
+					sizeof(struct Packet), 0) == -1) {
 					perror("server: send");
 				}
 				free(list_str); // deallocate the memory used for the list
@@ -383,13 +411,16 @@ void *client_handler(void *info) {
 				break;
 			/* Terminate the connection */
 			case EXIT :
-				printf("[%d] %s has disconnected\n", client_info.sockfd, client_info.alias);
+				printf("[%d] %s has disconnected\n", client_info.sockfd,
+					client_info.alias);
 				pthread_mutex_lock(&clientlist_mutex);
 				list_delete(&client_list, &client_info);
 				pthread_mutex_unlock(&clientlist_mutex);
 				break;
 			default :
-				fprintf(stderr, "Unidentified packet from [%d] %s : action_code=%d\n", client_info.sockfd, client_info.alias, packet.action);
+				fprintf(stderr,
+					"Unidentified packet from [%d] %s : action_code=%d\n",
+					client_info.sockfd, client_info.alias, packet.action);
 		}
 	}
 

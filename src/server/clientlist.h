@@ -1,6 +1,7 @@
 /**
  * @file clientlist.h
- * @brief Linked list implementation where every node represent a connection with a client.
+ * @brief Linked list implementation where every node represent a connection
+ * with a client.
  *
  * @author Enrico Vianello (<enrico.vianello.1@studenti.unipd.it>)
  * @version 1.0
