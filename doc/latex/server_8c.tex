@@ -1,0 +1,147 @@
+\hypertarget{server_8c}{}\section{src/server/server.c File Reference}
+\label{server_8c}\index{src/server/server.\+c@{src/server/server.\+c}}
+
+
+Server chat application for the c-\/chat project.  
+
+
+{\ttfamily \#include \char`\"{}server.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}networkutil.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clientlist.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$unistd.\+h$>$}\\*
+{\ttfamily \#include $<$errno.\+h$>$}\\*
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$stdint.\+h$>$}\\*
+{\ttfamily \#include $<$sys/types.\+h$>$}\\*
+{\ttfamily \#include $<$sys/socket.\+h$>$}\\*
+{\ttfamily \#include $<$netinet/in.\+h$>$}\\*
+{\ttfamily \#include $<$netdb.\+h$>$}\\*
+{\ttfamily \#include $<$arpa/inet.\+h$>$}\\*
+{\ttfamily \#include $<$sys/wait.\+h$>$}\\*
+{\ttfamily \#include $<$signal.\+h$>$}\\*
+{\ttfamily \#include $<$pthread.\+h$>$}\\*
+Include dependency graph for server.\+c\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{server_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{server_8c_a212d06967c429e15dd341c0dd0458336}{displayhelp} ()
+\begin{DoxyCompactList}\small\item\em Display the available commands. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{server_8c_ae4e2cf910fd8d0299a5b8af57b227e1a}{server\+\_\+handler} (void $\ast$param)
+\begin{DoxyCompactList}\small\item\em Routine that listens for server\textquotesingle{}s commands. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{server_8c_a01cae930ab07840bbe7d320b62c2e8cb}{client\+\_\+handler} (void $\ast$info)
+\begin{DoxyCompactList}\small\item\em Routine that handles the connection with a client. \end{DoxyCompactList}\item 
+int {\bfseries main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})\hypertarget{server_8c_a0ddf1224851353fc92bfbff6f499fa97}{}\label{server_8c_a0ddf1224851353fc92bfbff6f499fa97}
+
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{server_8c_a25061bc9654fbfab5356e6325daeab1d}{connectfd}
+\item 
+struct addrinfo \hyperlink{server_8c_ae56688bf50625537b553b45a9b68b808}{hints}
+\item 
+struct addrinfo $\ast$ \hyperlink{server_8c_aef3b9e5534e034ca3f4476a49a3e3105}{servinfo}
+\item 
+struct \hyperlink{structLinkedList}{Linked\+List} \hyperlink{server_8c_a6697f11f67991566ab4d0197cd78bf9f}{client\+\_\+list}
+\item 
+pthread\+\_\+mutex\+\_\+t \hyperlink{server_8c_a1cc31a41b454569942e2988ea151a7e5}{clientlist\+\_\+mutex}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Server chat application for the c-\/chat project. 
+
+\begin{DoxyAuthor}{Author}
+Enrico Vianello (\href{mailto:enrico.vianello.1@studenti.unipd.it}{\tt enrico.\+vianello.\+1@studenti.\+unipd.\+it}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxySince}{Since}
+1.\+0
+\end{DoxySince}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2016-\/2017, Enrico Vianello 
+\end{DoxyCopyright}
+
+
+\subsection{Function Documentation}
+\index{server.\+c@{server.\+c}!client\+\_\+handler@{client\+\_\+handler}}
+\index{client\+\_\+handler@{client\+\_\+handler}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{client\+\_\+handler(void $\ast$info)}{client_handler(void *info)}}]{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ client\+\_\+handler (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{info}
+\end{DoxyParamCaption}
+)}\hypertarget{server_8c_a01cae930ab07840bbe7d320b62c2e8cb}{}\label{server_8c_a01cae930ab07840bbe7d320b62c2e8cb}
+
+
+Routine that handles the connection with a client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em info} & Pointer to the {\ttfamily \hyperlink{structClientInfo}{Client\+Info}} structure relative to the connection that has to be handled.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Always a {\ttfamily N\+U\+LL} pointer. 
+\end{DoxyReturn}
+\index{server.\+c@{server.\+c}!displayhelp@{displayhelp}}
+\index{displayhelp@{displayhelp}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{displayhelp()}{displayhelp()}}]{\setlength{\rightskip}{0pt plus 5cm}int displayhelp (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{server_8c_a212d06967c429e15dd341c0dd0458336}{}\label{server_8c_a212d06967c429e15dd341c0dd0458336}
+
+
+Display the available commands. 
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily 0} if successful, {\ttfamily -\/1} if an error occurred. 
+\end{DoxyReturn}
+\index{server.\+c@{server.\+c}!server\+\_\+handler@{server\+\_\+handler}}
+\index{server\+\_\+handler@{server\+\_\+handler}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{server\+\_\+handler(void $\ast$param)}{server_handler(void *param)}}]{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ server\+\_\+handler (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{param}
+\end{DoxyParamCaption}
+)}\hypertarget{server_8c_ae4e2cf910fd8d0299a5b8af57b227e1a}{}\label{server_8c_ae4e2cf910fd8d0299a5b8af57b227e1a}
+
+
+Routine that listens for server\textquotesingle{}s commands. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em param} & Pointer to a structure containing execution parameters (currently unused, it can be safely set as {\ttfamily N\+U\+LL} pointer).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Always a {\ttfamily N\+U\+LL} pointer. 
+\end{DoxyReturn}
+
+
+\subsection{Variable Documentation}
+\index{server.\+c@{server.\+c}!client\+\_\+list@{client\+\_\+list}}
+\index{client\+\_\+list@{client\+\_\+list}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{client\+\_\+list}{client_list}}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf Linked\+List} client\+\_\+list}\hypertarget{server_8c_a6697f11f67991566ab4d0197cd78bf9f}{}\label{server_8c_a6697f11f67991566ab4d0197cd78bf9f}
+List of the connected clients. \index{server.\+c@{server.\+c}!clientlist\+\_\+mutex@{clientlist\+\_\+mutex}}
+\index{clientlist\+\_\+mutex@{clientlist\+\_\+mutex}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{clientlist\+\_\+mutex}{clientlist_mutex}}]{\setlength{\rightskip}{0pt plus 5cm}pthread\+\_\+mutex\+\_\+t clientlist\+\_\+mutex}\hypertarget{server_8c_a1cc31a41b454569942e2988ea151a7e5}{}\label{server_8c_a1cc31a41b454569942e2988ea151a7e5}
+Mutual exclusion variable preventing concurrent edits to the client list. \index{server.\+c@{server.\+c}!connectfd@{connectfd}}
+\index{connectfd@{connectfd}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{connectfd}{connectfd}}]{\setlength{\rightskip}{0pt plus 5cm}int connectfd}\hypertarget{server_8c_a25061bc9654fbfab5356e6325daeab1d}{}\label{server_8c_a25061bc9654fbfab5356e6325daeab1d}
+Socket to perform actions. \index{server.\+c@{server.\+c}!hints@{hints}}
+\index{hints@{hints}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{hints}{hints}}]{\setlength{\rightskip}{0pt plus 5cm}struct addrinfo hints}\hypertarget{server_8c_ae56688bf50625537b553b45a9b68b808}{}\label{server_8c_ae56688bf50625537b553b45a9b68b808}
+Structure used to set the preferencies for servinfo. \index{server.\+c@{server.\+c}!servinfo@{servinfo}}
+\index{servinfo@{servinfo}!server.\+c@{server.\+c}}
+\subsubsection[{\texorpdfstring{servinfo}{servinfo}}]{\setlength{\rightskip}{0pt plus 5cm}struct addrinfo$\ast$ servinfo}\hypertarget{server_8c_aef3b9e5534e034ca3f4476a49a3e3105}{}\label{server_8c_aef3b9e5534e034ca3f4476a49a3e3105}
+Structure containing local data. 

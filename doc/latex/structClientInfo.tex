@@ -1,0 +1,42 @@
+\hypertarget{structClientInfo}{}\section{Client\+Info Struct Reference}
+\label{structClientInfo}\index{Client\+Info@{Client\+Info}}
+
+
+Structure containing the informations regarding a single connection with a client.  
+
+
+
+
+{\ttfamily \#include $<$networkdef.\+h$>$}
+
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+pthread\+\_\+t \hyperlink{structClientInfo_a473c67886fcb2ae0b18b04e6890870ba}{thread\+\_\+\+ID}
+\item 
+int \hyperlink{structClientInfo_a2e6d4c5d276144166df3a511592b9c49}{sockfd}
+\item 
+char \hyperlink{structClientInfo_abeb73c8567e22ae0d8b01f51e08b3260}{alias} \mbox{[}\hyperlink{networkdef_8h_aa07ba58ae52cf11992b7e112454a3eea}{A\+L\+I\+A\+S\+L\+EN}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Structure containing the informations regarding a single connection with a client. 
+
+This structure is used by the server application 
+
+\subsection{Field Documentation}
+\index{Client\+Info@{Client\+Info}!alias@{alias}}
+\index{alias@{alias}!Client\+Info@{Client\+Info}}
+\subsubsection[{\texorpdfstring{alias}{alias}}]{\setlength{\rightskip}{0pt plus 5cm}Client\+Info\+::alias}\hypertarget{structClientInfo_abeb73c8567e22ae0d8b01f51e08b3260}{}\label{structClientInfo_abeb73c8567e22ae0d8b01f51e08b3260}
+Alias of the client associated to this connection. \index{Client\+Info@{Client\+Info}!sockfd@{sockfd}}
+\index{sockfd@{sockfd}!Client\+Info@{Client\+Info}}
+\subsubsection[{\texorpdfstring{sockfd}{sockfd}}]{\setlength{\rightskip}{0pt plus 5cm}Client\+Info\+::sockfd}\hypertarget{structClientInfo_a2e6d4c5d276144166df3a511592b9c49}{}\label{structClientInfo_a2e6d4c5d276144166df3a511592b9c49}
+Socket file descriptor associated with this connection. \index{Client\+Info@{Client\+Info}!thread\+\_\+\+ID@{thread\+\_\+\+ID}}
+\index{thread\+\_\+\+ID@{thread\+\_\+\+ID}!Client\+Info@{Client\+Info}}
+\subsubsection[{\texorpdfstring{thread\+\_\+\+ID}{thread_ID}}]{\setlength{\rightskip}{0pt plus 5cm}Client\+Info\+::thread\+\_\+\+ID}\hypertarget{structClientInfo_a473c67886fcb2ae0b18b04e6890870ba}{}\label{structClientInfo_a473c67886fcb2ae0b18b04e6890870ba}
+Pointer to the server\textquotesingle{}s thread associated to this connection. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/util/\hyperlink{networkdef_8h}{networkdef.\+h}\end{DoxyCompactItemize}

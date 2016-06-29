@@ -1,0 +1,6 @@
+<map id="src/server/server.c" name="src/server/server.c">
+<area shape="rect" id="node2" href="$server_8h.html" title="Server chat application for the c&#45;chat project. " alt="" coords="55,80,125,107"/>
+<area shape="rect" id="node3" href="$networkutil_8h.html" title="Collection of utility methods used in the c&#45;chat project. " alt="" coords="301,80,397,107"/>
+<area shape="rect" id="node9" href="$clientlist_8h.html" title="Linked list implementation where every node represent a connection with a client. ..." alt="" coords="523,80,604,107"/>
+<area shape="rect" id="node10" href="$networkdef_8h.html" title="Parameters, structures and definitions relative to the applications&#39; behaviour and the connection&#39;s p..." alt="" coords="551,155,648,181"/>
+</map>

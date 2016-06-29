@@ -1,0 +1,118 @@
+\hypertarget{networkdef_8h}{}\section{src/util/networkdef.h File Reference}
+\label{networkdef_8h}\index{src/util/networkdef.\+h@{src/util/networkdef.\+h}}
+
+
+Parameters, structures and definitions relative to the applications\textquotesingle{} behaviour and the connection\textquotesingle{}s protocol.  
+
+
+{\ttfamily \#include $<$pthread.\+h$>$}\\*
+Include dependency graph for networkdef.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=185pt]{networkdef_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{networkdef_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structClientInfo}{Client\+Info}
+\begin{DoxyCompactList}\small\item\em Structure containing the informations regarding a single connection with a client. \end{DoxyCompactList}\item 
+struct \hyperlink{structPacket}{Packet}
+\begin{DoxyCompactList}\small\item\em Structure representing a single packet exchanged between the server and the clients. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{networkdef_8h_aa07ba58ae52cf11992b7e112454a3eea}{A\+L\+I\+A\+S\+L\+EN}~32
+\item 
+\#define \hyperlink{networkdef_8h_af83ab94da573d95ddc366030c5537d60}{C\+M\+D\+L\+EN}~32
+\item 
+\#define \hyperlink{networkdef_8h_aa8ece57a8603af32c591885469eb3b53}{D\+E\+F\+A\+U\+L\+T\+A\+L\+I\+AS}~\char`\"{}Anonymous\char`\"{}
+\item 
+\#define \hyperlink{networkdef_8h_a2ec728de0089ed37af934ae60ed1cd7f}{P\+A\+Y\+L\+EN}~2048
+\item 
+\#define \hyperlink{networkdef_8h_ace5c08f66edfc6ae44edaeef6b6101b6}{M\+A\+X\+C\+L\+I\+E\+N\+TS}~64
+\item 
+\#define \hyperlink{networkdef_8h_ad111e603bbebe5d87f6bc39264ce4733}{E\+X\+IT}~0
+\item 
+\#define \hyperlink{networkdef_8h_adf9402a5feb214522faa2cacb0a27403}{A\+L\+I\+AS}~1
+\item 
+\#define \hyperlink{networkdef_8h_a0c719c414608ef14852670b063876c07}{M\+SG}~2
+\item 
+\#define \hyperlink{networkdef_8h_a058161b004cade9fa3185c76022d92ed}{W\+H\+I\+S\+P\+ER}~3
+\item 
+\#define \hyperlink{networkdef_8h_a109c1cb0257bd1325c46dce538d5ec49}{S\+H\+O\+UT}~4
+\item 
+\#define \hyperlink{networkdef_8h_a035c351dbfe2787a071986245c7d2c57}{L\+I\+S\+T\+\_\+Q}~5
+\item 
+\#define \hyperlink{networkdef_8h_a36c0d2925720ebecbaf3469ff40fc6f8}{L\+I\+S\+T\+\_\+A}~6
+\item 
+\#define \hyperlink{networkdef_8h_a44ac67e8098ae79effe3d2abd710ad0e}{U\+NF}~7
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Parameters, structures and definitions relative to the applications\textquotesingle{} behaviour and the connection\textquotesingle{}s protocol. 
+
+\begin{DoxyAuthor}{Author}
+Enrico Vianello (\href{mailto:enrico.vianello.1@studenti.unipd.it}{\tt enrico.\+vianello.\+1@studenti.\+unipd.\+it}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxySince}{Since}
+1.\+0
+\end{DoxySince}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2016-\/2017, Enrico Vianello 
+\end{DoxyCopyright}
+
+
+\subsection{Macro Definition Documentation}
+\index{networkdef.\+h@{networkdef.\+h}!A\+L\+I\+AS@{A\+L\+I\+AS}}
+\index{A\+L\+I\+AS@{A\+L\+I\+AS}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{A\+L\+I\+AS}{ALIAS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define A\+L\+I\+AS~1}\hypertarget{networkdef_8h_adf9402a5feb214522faa2cacb0a27403}{}\label{networkdef_8h_adf9402a5feb214522faa2cacb0a27403}
+alias changing request \index{networkdef.\+h@{networkdef.\+h}!A\+L\+I\+A\+S\+L\+EN@{A\+L\+I\+A\+S\+L\+EN}}
+\index{A\+L\+I\+A\+S\+L\+EN@{A\+L\+I\+A\+S\+L\+EN}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{A\+L\+I\+A\+S\+L\+EN}{ALIASLEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define A\+L\+I\+A\+S\+L\+EN~32}\hypertarget{networkdef_8h_aa07ba58ae52cf11992b7e112454a3eea}{}\label{networkdef_8h_aa07ba58ae52cf11992b7e112454a3eea}
+Maximum length of the client\textquotesingle{}s aliases \index{networkdef.\+h@{networkdef.\+h}!C\+M\+D\+L\+EN@{C\+M\+D\+L\+EN}}
+\index{C\+M\+D\+L\+EN@{C\+M\+D\+L\+EN}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{C\+M\+D\+L\+EN}{CMDLEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define C\+M\+D\+L\+EN~32}\hypertarget{networkdef_8h_af83ab94da573d95ddc366030c5537d60}{}\label{networkdef_8h_af83ab94da573d95ddc366030c5537d60}
+Maximum length of server\textquotesingle{}s and client\textquotesingle{}s commands \index{networkdef.\+h@{networkdef.\+h}!D\+E\+F\+A\+U\+L\+T\+A\+L\+I\+AS@{D\+E\+F\+A\+U\+L\+T\+A\+L\+I\+AS}}
+\index{D\+E\+F\+A\+U\+L\+T\+A\+L\+I\+AS@{D\+E\+F\+A\+U\+L\+T\+A\+L\+I\+AS}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{D\+E\+F\+A\+U\+L\+T\+A\+L\+I\+AS}{DEFAULTALIAS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define D\+E\+F\+A\+U\+L\+T\+A\+L\+I\+AS~\char`\"{}Anonymous\char`\"{}}\hypertarget{networkdef_8h_aa8ece57a8603af32c591885469eb3b53}{}\label{networkdef_8h_aa8ece57a8603af32c591885469eb3b53}
+Default alias for new clients \index{networkdef.\+h@{networkdef.\+h}!E\+X\+IT@{E\+X\+IT}}
+\index{E\+X\+IT@{E\+X\+IT}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{E\+X\+IT}{EXIT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define E\+X\+IT~0}\hypertarget{networkdef_8h_ad111e603bbebe5d87f6bc39264ce4733}{}\label{networkdef_8h_ad111e603bbebe5d87f6bc39264ce4733}
+disconnection request \index{networkdef.\+h@{networkdef.\+h}!L\+I\+S\+T\+\_\+A@{L\+I\+S\+T\+\_\+A}}
+\index{L\+I\+S\+T\+\_\+A@{L\+I\+S\+T\+\_\+A}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{L\+I\+S\+T\+\_\+A}{LIST_A}}]{\setlength{\rightskip}{0pt plus 5cm}\#define L\+I\+S\+T\+\_\+A~6}\hypertarget{networkdef_8h_a36c0d2925720ebecbaf3469ff40fc6f8}{}\label{networkdef_8h_a36c0d2925720ebecbaf3469ff40fc6f8}
+packet containing the client list, is often sent in response to L\+I\+S\+T\+\_\+Q \index{networkdef.\+h@{networkdef.\+h}!L\+I\+S\+T\+\_\+Q@{L\+I\+S\+T\+\_\+Q}}
+\index{L\+I\+S\+T\+\_\+Q@{L\+I\+S\+T\+\_\+Q}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{L\+I\+S\+T\+\_\+Q}{LIST_Q}}]{\setlength{\rightskip}{0pt plus 5cm}\#define L\+I\+S\+T\+\_\+Q~5}\hypertarget{networkdef_8h_a035c351dbfe2787a071986245c7d2c57}{}\label{networkdef_8h_a035c351dbfe2787a071986245c7d2c57}
+request to the server to obtain the client list \index{networkdef.\+h@{networkdef.\+h}!M\+A\+X\+C\+L\+I\+E\+N\+TS@{M\+A\+X\+C\+L\+I\+E\+N\+TS}}
+\index{M\+A\+X\+C\+L\+I\+E\+N\+TS@{M\+A\+X\+C\+L\+I\+E\+N\+TS}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{M\+A\+X\+C\+L\+I\+E\+N\+TS}{MAXCLIENTS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+A\+X\+C\+L\+I\+E\+N\+TS~64}\hypertarget{networkdef_8h_ace5c08f66edfc6ae44edaeef6b6101b6}{}\label{networkdef_8h_ace5c08f66edfc6ae44edaeef6b6101b6}
+maximum number of clients connected \index{networkdef.\+h@{networkdef.\+h}!M\+SG@{M\+SG}}
+\index{M\+SG@{M\+SG}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{M\+SG}{MSG}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+SG~2}\hypertarget{networkdef_8h_a0c719c414608ef14852670b063876c07}{}\label{networkdef_8h_a0c719c414608ef14852670b063876c07}
+message packet \index{networkdef.\+h@{networkdef.\+h}!P\+A\+Y\+L\+EN@{P\+A\+Y\+L\+EN}}
+\index{P\+A\+Y\+L\+EN@{P\+A\+Y\+L\+EN}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+Y\+L\+EN}{PAYLEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+A\+Y\+L\+EN~2048}\hypertarget{networkdef_8h_a2ec728de0089ed37af934ae60ed1cd7f}{}\label{networkdef_8h_a2ec728de0089ed37af934ae60ed1cd7f}
+Payload size of a single packet. To contain the alias list, it should be at least A\+L\+I\+A\+S\+L\+E\+N$\ast$\+M\+A\+X\+C\+L\+I\+E\+N\+TS \index{networkdef.\+h@{networkdef.\+h}!S\+H\+O\+UT@{S\+H\+O\+UT}}
+\index{S\+H\+O\+UT@{S\+H\+O\+UT}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{S\+H\+O\+UT}{SHOUT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+H\+O\+UT~4}\hypertarget{networkdef_8h_a109c1cb0257bd1325c46dce538d5ec49}{}\label{networkdef_8h_a109c1cb0257bd1325c46dce538d5ec49}
+request to send a broadcast message \index{networkdef.\+h@{networkdef.\+h}!U\+NF@{U\+NF}}
+\index{U\+NF@{U\+NF}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{U\+NF}{UNF}}]{\setlength{\rightskip}{0pt plus 5cm}\#define U\+NF~7}\hypertarget{networkdef_8h_a44ac67e8098ae79effe3d2abd710ad0e}{}\label{networkdef_8h_a44ac67e8098ae79effe3d2abd710ad0e}
+User Not Found, error packet \index{networkdef.\+h@{networkdef.\+h}!W\+H\+I\+S\+P\+ER@{W\+H\+I\+S\+P\+ER}}
+\index{W\+H\+I\+S\+P\+ER@{W\+H\+I\+S\+P\+ER}!networkdef.\+h@{networkdef.\+h}}
+\subsubsection[{\texorpdfstring{W\+H\+I\+S\+P\+ER}{WHISPER}}]{\setlength{\rightskip}{0pt plus 5cm}\#define W\+H\+I\+S\+P\+ER~3}\hypertarget{networkdef_8h_a058161b004cade9fa3185c76022d92ed}{}\label{networkdef_8h_a058161b004cade9fa3185c76022d92ed}
+request to contact a specified client 

@@ -1,0 +1,83 @@
+\hypertarget{client_8c}{}\section{src/client/client.c File Reference}
+\label{client_8c}\index{src/client/client.\+c@{src/client/client.\+c}}
+
+
+Client chat application for the c-\/chat project.  
+
+
+{\ttfamily \#include \char`\"{}client.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}networkdef.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}networkutil.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$unistd.\+h$>$}\\*
+{\ttfamily \#include $<$errno.\+h$>$}\\*
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$netdb.\+h$>$}\\*
+{\ttfamily \#include $<$sys/types.\+h$>$}\\*
+{\ttfamily \#include $<$netinet/in.\+h$>$}\\*
+{\ttfamily \#include $<$sys/socket.\+h$>$}\\*
+{\ttfamily \#include $<$arpa/inet.\+h$>$}\\*
+{\ttfamily \#include $<$pthread.\+h$>$}\\*
+Include dependency graph for client.\+c\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{client_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})\hypertarget{client_8c_a0ddf1224851353fc92bfbff6f499fa97}{}\label{client_8c_a0ddf1224851353fc92bfbff6f499fa97}
+
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{client_8c_a9709aefe4930807392898aecb0cb8a79}{connected}
+\item 
+int \hyperlink{client_8c_a09fb4aa8720896dcbcbe5cece1bfeb27}{serversfd}
+\item 
+char \hyperlink{client_8c_a62c5d73d188a0bea504be16faa96e5a2}{myalias} \mbox{[}\hyperlink{networkdef_8h_aa07ba58ae52cf11992b7e112454a3eea}{A\+L\+I\+A\+S\+L\+EN}\mbox{]}
+\item 
+char \hyperlink{client_8c_a77e4114b1f1d4373537d8da2d3ed2e78}{server\+\_\+ip} \mbox{[}I\+N\+E\+T6\+\_\+\+A\+D\+D\+R\+S\+T\+R\+L\+EN\mbox{]}
+\item 
+char \hyperlink{client_8c_ae7c766edbee46e012d2f333f725d3d37}{server\+\_\+port} \mbox{[}6\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Client chat application for the c-\/chat project. 
+
+\begin{DoxyAuthor}{Author}
+Enrico Vianello (\href{mailto:enrico.vianello.1@studenti.unipd.it}{\tt enrico.\+vianello.\+1@studenti.\+unipd.\+it}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxySince}{Since}
+1.\+0
+\end{DoxySince}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2016-\/2017, Enrico Vianello 
+\end{DoxyCopyright}
+
+
+\subsection{Variable Documentation}
+\index{client.\+c@{client.\+c}!connected@{connected}}
+\index{connected@{connected}!client.\+c@{client.\+c}}
+\subsubsection[{\texorpdfstring{connected}{connected}}]{\setlength{\rightskip}{0pt plus 5cm}int connected}\hypertarget{client_8c_a9709aefe4930807392898aecb0cb8a79}{}\label{client_8c_a9709aefe4930807392898aecb0cb8a79}
+Connection status\+: 1 if connected with a server, 0 elsewhere \index{client.\+c@{client.\+c}!myalias@{myalias}}
+\index{myalias@{myalias}!client.\+c@{client.\+c}}
+\subsubsection[{\texorpdfstring{myalias}{myalias}}]{\setlength{\rightskip}{0pt plus 5cm}char myalias\mbox{[}{\bf A\+L\+I\+A\+S\+L\+EN}\mbox{]}}\hypertarget{client_8c_a62c5d73d188a0bea504be16faa96e5a2}{}\label{client_8c_a62c5d73d188a0bea504be16faa96e5a2}
+Alias of the client \index{client.\+c@{client.\+c}!server\+\_\+ip@{server\+\_\+ip}}
+\index{server\+\_\+ip@{server\+\_\+ip}!client.\+c@{client.\+c}}
+\subsubsection[{\texorpdfstring{server\+\_\+ip}{server_ip}}]{\setlength{\rightskip}{0pt plus 5cm}char server\+\_\+ip\mbox{[}I\+N\+E\+T6\+\_\+\+A\+D\+D\+R\+S\+T\+R\+L\+EN\mbox{]}}\hypertarget{client_8c_a77e4114b1f1d4373537d8da2d3ed2e78}{}\label{client_8c_a77e4114b1f1d4373537d8da2d3ed2e78}
+Server\textquotesingle{}s IP \index{client.\+c@{client.\+c}!server\+\_\+port@{server\+\_\+port}}
+\index{server\+\_\+port@{server\+\_\+port}!client.\+c@{client.\+c}}
+\subsubsection[{\texorpdfstring{server\+\_\+port}{server_port}}]{\setlength{\rightskip}{0pt plus 5cm}char server\+\_\+port\mbox{[}6\mbox{]}}\hypertarget{client_8c_ae7c766edbee46e012d2f333f725d3d37}{}\label{client_8c_ae7c766edbee46e012d2f333f725d3d37}
+Server\textquotesingle{}s port \index{client.\+c@{client.\+c}!serversfd@{serversfd}}
+\index{serversfd@{serversfd}!client.\+c@{client.\+c}}
+\subsubsection[{\texorpdfstring{serversfd}{serversfd}}]{\setlength{\rightskip}{0pt plus 5cm}int serversfd}\hypertarget{client_8c_a09fb4aa8720896dcbcbe5cece1bfeb27}{}\label{client_8c_a09fb4aa8720896dcbcbe5cece1bfeb27}
+Socket file descriptor of the connection with the server 

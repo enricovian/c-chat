@@ -1,0 +1,204 @@
+\hypertarget{clientlist_8h}{}\section{src/server/clientlist.h File Reference}
+\label{clientlist_8h}\index{src/server/clientlist.\+h@{src/server/clientlist.\+h}}
+
+
+Linked list implementation where every node represent a connection with a client.  
+
+
+{\ttfamily \#include \char`\"{}networkdef.\+h\char`\"{}}\\*
+Include dependency graph for clientlist.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=187pt]{clientlist_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=303pt]{clientlist_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structLLNode}{L\+L\+Node}
+\begin{DoxyCompactList}\small\item\em Node of the linked list, representing a connection. \end{DoxyCompactList}\item 
+struct \hyperlink{structLinkedList}{Linked\+List}
+\begin{DoxyCompactList}\small\item\em Linked list structure. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{clientlist_8h_ada8804e2c519afb4f08a97e14c498b77}{compare} (struct \hyperlink{structClientInfo}{Client\+Info} $\ast$a, struct \hyperlink{structClientInfo}{Client\+Info} $\ast$b)
+\begin{DoxyCompactList}\small\item\em Compare two {\ttfamily \hyperlink{structClientInfo}{Client\+Info}} struct, checking if they share the same connection socket. \end{DoxyCompactList}\item 
+void \hyperlink{clientlist_8h_a0ab4922efddbeb22c4554a12301adfac}{list\+\_\+init} (struct \hyperlink{structLinkedList}{Linked\+List} $\ast$ll)
+\begin{DoxyCompactList}\small\item\em Initialize an empty list. \end{DoxyCompactList}\item 
+int \hyperlink{clientlist_8h_a6cea1cf625133bda1f22bd08c54659c0}{list\+\_\+insert} (struct \hyperlink{structLinkedList}{Linked\+List} $\ast$ll, struct \hyperlink{structClientInfo}{Client\+Info} $\ast$cl\+\_\+info)
+\begin{DoxyCompactList}\small\item\em Insert a new element to the list. \end{DoxyCompactList}\item 
+int \hyperlink{clientlist_8h_acb1d4dfa3cfe0c12c48bb6c237b88a24}{list\+\_\+delete} (struct \hyperlink{structLinkedList}{Linked\+List} $\ast$ll, struct \hyperlink{structClientInfo}{Client\+Info} $\ast$cl\+\_\+info)
+\begin{DoxyCompactList}\small\item\em Delete a node from the list. \end{DoxyCompactList}\item 
+void \hyperlink{clientlist_8h_a27550fe0a8fae43069d7fc80735ebfa3}{list\+\_\+dump} (struct \hyperlink{structLinkedList}{Linked\+List} $\ast$ll)
+\begin{DoxyCompactList}\small\item\em Print the list in a readable format. \end{DoxyCompactList}\item 
+int \hyperlink{clientlist_8h_a9b6ae95fc1c6a731fd23bc4976406bcc}{list\+\_\+size} (struct \hyperlink{structLinkedList}{Linked\+List} $\ast$ll)
+\begin{DoxyCompactList}\small\item\em Returns the size of the linked list. \end{DoxyCompactList}\item 
+char $\ast$$\ast$ \hyperlink{clientlist_8h_a849ee8fee1745818db7ab46b1770783b}{list\+\_\+clients} (struct \hyperlink{structLinkedList}{Linked\+List} $\ast$ll)
+\begin{DoxyCompactList}\small\item\em Returns an array of strings containing the client\textquotesingle{}s aliases. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Linked list implementation where every node represent a connection with a client. 
+
+\begin{DoxyAuthor}{Author}
+Enrico Vianello (\href{mailto:enrico.vianello.1@studenti.unipd.it}{\tt enrico.\+vianello.\+1@studenti.\+unipd.\+it}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxySince}{Since}
+1.\+0
+\end{DoxySince}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2016-\/2017, Enrico Vianello 
+\end{DoxyCopyright}
+
+
+\subsection{Function Documentation}
+\index{clientlist.\+h@{clientlist.\+h}!compare@{compare}}
+\index{compare@{compare}!clientlist.\+h@{clientlist.\+h}}
+\subsubsection[{\texorpdfstring{compare(struct Client\+Info $\ast$a, struct Client\+Info $\ast$b)}{compare(struct ClientInfo *a, struct ClientInfo *b)}}]{\setlength{\rightskip}{0pt plus 5cm}int compare (
+\begin{DoxyParamCaption}
+\item[{struct {\bf Client\+Info} $\ast$}]{a, }
+\item[{struct {\bf Client\+Info} $\ast$}]{b}
+\end{DoxyParamCaption}
+)}\hypertarget{clientlist_8h_ada8804e2c519afb4f08a97e14c498b77}{}\label{clientlist_8h_ada8804e2c519afb4f08a97e14c498b77}
+
+
+Compare two {\ttfamily \hyperlink{structClientInfo}{Client\+Info}} struct, checking if they share the same connection socket. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & Pointer to the first \hyperlink{structClientInfo}{Client\+Info} struct. \\
+\hline
+{\em b} & Pointer to the second \hyperlink{structClientInfo}{Client\+Info} struct.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily 0} if they have the same connection socket. 
+\end{DoxyReturn}
+\index{clientlist.\+h@{clientlist.\+h}!list\+\_\+clients@{list\+\_\+clients}}
+\index{list\+\_\+clients@{list\+\_\+clients}!clientlist.\+h@{clientlist.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+clients(struct Linked\+List $\ast$ll)}{list_clients(struct LinkedList *ll)}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$$\ast$ list\+\_\+clients (
+\begin{DoxyParamCaption}
+\item[{struct {\bf Linked\+List} $\ast$}]{ll}
+\end{DoxyParamCaption}
+)}\hypertarget{clientlist_8h_a849ee8fee1745818db7ab46b1770783b}{}\label{clientlist_8h_a849ee8fee1745818db7ab46b1770783b}
+
+
+Returns an array of strings containing the client\textquotesingle{}s aliases. 
+
+This method allocate the memory necessary to store the list, so make sure to deallocate using the pointer returned.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ll} & Pointer to the linked list.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+An array of strings containing the aliases field of the objects {\ttfamily \hyperlink{structClientInfo}{Client\+Info}} in the list. 
+\end{DoxyReturn}
+\index{clientlist.\+h@{clientlist.\+h}!list\+\_\+delete@{list\+\_\+delete}}
+\index{list\+\_\+delete@{list\+\_\+delete}!clientlist.\+h@{clientlist.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+delete(struct Linked\+List $\ast$ll, struct Client\+Info $\ast$cl\+\_\+info)}{list_delete(struct LinkedList *ll, struct ClientInfo *cl_info)}}]{\setlength{\rightskip}{0pt plus 5cm}int list\+\_\+delete (
+\begin{DoxyParamCaption}
+\item[{struct {\bf Linked\+List} $\ast$}]{ll, }
+\item[{struct {\bf Client\+Info} $\ast$}]{cl\+\_\+info}
+\end{DoxyParamCaption}
+)}\hypertarget{clientlist_8h_acb1d4dfa3cfe0c12c48bb6c237b88a24}{}\label{clientlist_8h_acb1d4dfa3cfe0c12c48bb6c237b88a24}
+
+
+Delete a node from the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ll} & Pointer to the linked list. \\
+\hline
+{\em cl\+\_\+info} & Pointer to the {\ttfamily \hyperlink{structClientInfo}{Client\+Info}} structure of the node that has to be removed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily 0} if successful, {\ttfamily -\/1} if the list is empty or an error occours. 
+\end{DoxyReturn}
+\index{clientlist.\+h@{clientlist.\+h}!list\+\_\+dump@{list\+\_\+dump}}
+\index{list\+\_\+dump@{list\+\_\+dump}!clientlist.\+h@{clientlist.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+dump(struct Linked\+List $\ast$ll)}{list_dump(struct LinkedList *ll)}}]{\setlength{\rightskip}{0pt plus 5cm}void list\+\_\+dump (
+\begin{DoxyParamCaption}
+\item[{struct {\bf Linked\+List} $\ast$}]{ll}
+\end{DoxyParamCaption}
+)}\hypertarget{clientlist_8h_a27550fe0a8fae43069d7fc80735ebfa3}{}\label{clientlist_8h_a27550fe0a8fae43069d7fc80735ebfa3}
+
+
+Print the list in a readable format. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ll} & Pointer to the linked list. \\
+\hline
+\end{DoxyParams}
+\index{clientlist.\+h@{clientlist.\+h}!list\+\_\+init@{list\+\_\+init}}
+\index{list\+\_\+init@{list\+\_\+init}!clientlist.\+h@{clientlist.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+init(struct Linked\+List $\ast$ll)}{list_init(struct LinkedList *ll)}}]{\setlength{\rightskip}{0pt plus 5cm}void list\+\_\+init (
+\begin{DoxyParamCaption}
+\item[{struct {\bf Linked\+List} $\ast$}]{ll}
+\end{DoxyParamCaption}
+)}\hypertarget{clientlist_8h_a0ab4922efddbeb22c4554a12301adfac}{}\label{clientlist_8h_a0ab4922efddbeb22c4554a12301adfac}
+
+
+Initialize an empty list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ll} & Pointer to the linked list. \\
+\hline
+\end{DoxyParams}
+\index{clientlist.\+h@{clientlist.\+h}!list\+\_\+insert@{list\+\_\+insert}}
+\index{list\+\_\+insert@{list\+\_\+insert}!clientlist.\+h@{clientlist.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+insert(struct Linked\+List $\ast$ll, struct Client\+Info $\ast$cl\+\_\+info)}{list_insert(struct LinkedList *ll, struct ClientInfo *cl_info)}}]{\setlength{\rightskip}{0pt plus 5cm}int list\+\_\+insert (
+\begin{DoxyParamCaption}
+\item[{struct {\bf Linked\+List} $\ast$}]{ll, }
+\item[{struct {\bf Client\+Info} $\ast$}]{cl\+\_\+info}
+\end{DoxyParamCaption}
+)}\hypertarget{clientlist_8h_a6cea1cf625133bda1f22bd08c54659c0}{}\label{clientlist_8h_a6cea1cf625133bda1f22bd08c54659c0}
+
+
+Insert a new element to the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ll} & Pointer to the linked list. \\
+\hline
+{\em cl\+\_\+info} & Pointer to the {\ttfamily \hyperlink{structClientInfo}{Client\+Info}} structure that will be contained in the new node.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily 0} if successful, {\ttfamily -\/1} if the list is full or an error occours. 
+\end{DoxyReturn}
+\index{clientlist.\+h@{clientlist.\+h}!list\+\_\+size@{list\+\_\+size}}
+\index{list\+\_\+size@{list\+\_\+size}!clientlist.\+h@{clientlist.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+size(struct Linked\+List $\ast$ll)}{list_size(struct LinkedList *ll)}}]{\setlength{\rightskip}{0pt plus 5cm}int list\+\_\+size (
+\begin{DoxyParamCaption}
+\item[{struct {\bf Linked\+List} $\ast$}]{ll}
+\end{DoxyParamCaption}
+)}\hypertarget{clientlist_8h_a9b6ae95fc1c6a731fd23bc4976406bcc}{}\label{clientlist_8h_a9b6ae95fc1c6a731fd23bc4976406bcc}
+
+
+Returns the size of the linked list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ll} & Pointer to the linked list.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+An {\ttfamily int} representing the number of nodes in the list. 
+\end{DoxyReturn}

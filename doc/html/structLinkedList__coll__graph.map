@@ -1,0 +1,4 @@
+<map id="LinkedList" name="LinkedList">
+<area shape="rect" id="node2" href="$structLLNode.html" title="Node of the linked list, representing a connection. " alt="" coords="13,95,79,121"/>
+<area shape="rect" id="node3" href="$structClientInfo.html" title="Structure containing the informations regarding a single connection with a client. " alt="" coords="7,5,85,32"/>
+</map>

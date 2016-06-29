@@ -1,0 +1,59 @@
+\hypertarget{networkutil_8c}{}\section{src/util/networkutil.c File Reference}
+\label{networkutil_8c}\index{src/util/networkutil.\+c@{src/util/networkutil.\+c}}
+
+
+Collection of utility methods used in the c-\/chat project.  
+
+
+{\ttfamily \#include \char`\"{}networkutil.\+h\char`\"{}}\\*
+Include dependency graph for networkutil.\+c\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{networkutil_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$ \hyperlink{networkutil_8c_a294867ba9d7ff47e39d421134d8e12ab}{get\+\_\+in\+\_\+addr} (struct sockaddr $\ast$sa)
+\begin{DoxyCompactList}\small\item\em Get the address structure correctly formatted\+: I\+Pv4 or I\+Pv6 from a generic {\ttfamily sockaddr} structure. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Collection of utility methods used in the c-\/chat project. 
+
+\begin{DoxyAuthor}{Author}
+Enrico Vianello (\href{mailto:enrico.vianello.1@studenti.unipd.it}{\tt enrico.\+vianello.\+1@studenti.\+unipd.\+it}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxySince}{Since}
+1.\+0
+\end{DoxySince}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2016-\/2017, Enrico Vianello 
+\end{DoxyCopyright}
+
+
+\subsection{Function Documentation}
+\index{networkutil.\+c@{networkutil.\+c}!get\+\_\+in\+\_\+addr@{get\+\_\+in\+\_\+addr}}
+\index{get\+\_\+in\+\_\+addr@{get\+\_\+in\+\_\+addr}!networkutil.\+c@{networkutil.\+c}}
+\subsubsection[{\texorpdfstring{get\+\_\+in\+\_\+addr(struct sockaddr $\ast$sa)}{get_in_addr(struct sockaddr *sa)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ get\+\_\+in\+\_\+addr (
+\begin{DoxyParamCaption}
+\item[{struct sockaddr $\ast$}]{sa}
+\end{DoxyParamCaption}
+)}\hypertarget{networkutil_8c_a294867ba9d7ff47e39d421134d8e12ab}{}\label{networkutil_8c_a294867ba9d7ff47e39d421134d8e12ab}
+
+
+Get the address structure correctly formatted\+: I\+Pv4 or I\+Pv6 from a generic {\ttfamily sockaddr} structure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sa} & The {\ttfamily sockaddr} struct.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to a structure {\ttfamily sin\+\_\+addr} (if the address is I\+Pv4) or {\ttfamily sin6\+\_\+addr} (if the address is I\+Pv6). 
+\end{DoxyReturn}

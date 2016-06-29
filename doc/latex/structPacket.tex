@@ -1,0 +1,45 @@
+\hypertarget{structPacket}{}\section{Packet Struct Reference}
+\label{structPacket}\index{Packet@{Packet}}
+
+
+Structure representing a single packet exchanged between the server and the clients.  
+
+
+
+
+{\ttfamily \#include $<$networkdef.\+h$>$}
+
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+unsigned char \hyperlink{structPacket_a41917e52ffd1d92b7477073cbbceddee}{action}
+\item 
+char \hyperlink{structPacket_ac20e801b8bbe165a85317fc937d11cf3}{alias} \mbox{[}\hyperlink{networkdef_8h_aa07ba58ae52cf11992b7e112454a3eea}{A\+L\+I\+A\+S\+L\+EN}\mbox{]}
+\item 
+int \hyperlink{structPacket_a1d26d154760776ebcea98638b0bf1f73}{len}
+\item 
+char \hyperlink{structPacket_a819db228469a8fd8beb62114dbfaed56}{payload} \mbox{[}\hyperlink{networkdef_8h_a2ec728de0089ed37af934ae60ed1cd7f}{P\+A\+Y\+L\+EN}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Structure representing a single packet exchanged between the server and the clients. 
+
+\subsection{Field Documentation}
+\index{Packet@{Packet}!action@{action}}
+\index{action@{action}!Packet@{Packet}}
+\subsubsection[{\texorpdfstring{action}{action}}]{\setlength{\rightskip}{0pt plus 5cm}Packet\+::action}\hypertarget{structPacket_a41917e52ffd1d92b7477073cbbceddee}{}\label{structPacket_a41917e52ffd1d92b7477073cbbceddee}
+Action code of this packet. The possible values can be found in the definitions of the file {\ttfamily \hyperlink{networkdef_8h}{networkdef.\+h}} \index{Packet@{Packet}!alias@{alias}}
+\index{alias@{alias}!Packet@{Packet}}
+\subsubsection[{\texorpdfstring{alias}{alias}}]{\setlength{\rightskip}{0pt plus 5cm}Packet\+::alias}\hypertarget{structPacket_ac20e801b8bbe165a85317fc937d11cf3}{}\label{structPacket_ac20e801b8bbe165a85317fc937d11cf3}
+Field that can contain an alias. Its use is explained in the protocol description. \index{Packet@{Packet}!len@{len}}
+\index{len@{len}!Packet@{Packet}}
+\subsubsection[{\texorpdfstring{len}{len}}]{\setlength{\rightskip}{0pt plus 5cm}Packet\+::len}\hypertarget{structPacket_a1d26d154760776ebcea98638b0bf1f73}{}\label{structPacket_a1d26d154760776ebcea98638b0bf1f73}
+Field that can contain an integer. Its use is explained in the protocol description. \index{Packet@{Packet}!payload@{payload}}
+\index{payload@{payload}!Packet@{Packet}}
+\subsubsection[{\texorpdfstring{payload}{payload}}]{\setlength{\rightskip}{0pt plus 5cm}Packet\+::payload}\hypertarget{structPacket_a819db228469a8fd8beb62114dbfaed56}{}\label{structPacket_a819db228469a8fd8beb62114dbfaed56}
+\hyperlink{structPacket}{Packet}\textquotesingle{}s main body. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/util/\hyperlink{networkdef_8h}{networkdef.\+h}\end{DoxyCompactItemize}
