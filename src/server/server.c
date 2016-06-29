@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	/******************************
-	 * Set up the listener socket
+	 * Set up the listener socket *
 	 ******************************/
 
 	memset(&hints, 0, sizeof hints);	// make sure the struct is empty
@@ -164,9 +164,9 @@ int main(int argc, char *argv[]) {
 	}
 	printf("Waiting for connections...\n");
 
-	/******************************
-	 * Connections handling
-	 ******************************/
+	/************************
+	 * Connections handling *
+	 ************************/
 	/* connector's address information */
 	struct sockaddr_storage client_addr;
 	/* dimension of the connector's sockaddr structure */

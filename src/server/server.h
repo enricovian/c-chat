@@ -1,5 +1,5 @@
 /**
- * @file server.c
+ * @file server.h
  * @brief Server chat application for the c-chat project.
  *
  * @author Enrico Vianello (<enrico.vianello.1@studenti.unipd.it>)
