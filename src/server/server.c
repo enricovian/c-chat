@@ -63,33 +63,33 @@ struct LinkedList client_list;
 pthread_mutex_t clientlist_mutex;
 
 /**
-* @brief Display the available commands.
-*
-* @return \c 0 if successful, \c -1 if an error occurred.
-*/
+ * @brief Display the available commands.
+ *
+ * @return \c 0 if successful, \c -1 if an error occurred.
+ */
 int displayhelp();
 
 /**
-* @brief Routine that listens for server's commands.
-*
-* @param param Pointer to a structure containing execution parameters
-* (currently unused, it can be safely set as \c NULL pointer).
-*
-* @return Always a \c NULL pointer.
-*/
+ * @brief Routine that listens for server's commands.
+ *
+ * @param param Pointer to a structure containing execution parameters
+ * (currently unused, it can be safely set as \c NULL pointer).
+ *
+ * @return Always a \c NULL pointer.
+ */
 void *server_handler(void *param);
 
 /**
-* @brief Routine that handles the connection with a client.
-*
-* @param info Pointer to the \c ClientInfo structure relative to the connection
-* that has to be handled.
-*
-* @return Always a \c NULL pointer.
-*/
+ * @brief Routine that handles the connection with a client.
+ *
+ * @param info Pointer to the \c ClientInfo structure relative to the connection
+ * that has to be handled.
+ *
+ * @return Always a \c NULL pointer.
+ */
 void *client_handler(void *info);
 
-int main(void) {
+int main(int argc, char *argv[]) {
 	/* initialize client list */
 	list_init(&client_list);
 	/* initiate mutex */
@@ -237,13 +237,13 @@ int displayhelp() {
 }
 
 /**
-* @brief Routine that listens for server's commands.
-*
-* @param param Pointer to a structure containing execution parameters
-* (currently unused, it can be safely set as \c NULL pointer).
-*
-* @return Always a \c NULL pointer.
-*/
+ * @brief Routine that listens for server's commands.
+ *
+ * @param param Pointer to a structure containing execution parameters
+ * (currently unused, it can be safely set as \c NULL pointer).
+ *
+ * @return Always a \c NULL pointer.
+ */
 void *server_handler(void *param) {
 	char command[CMDLEN];
 	while(scanf("%s", command) == 1) {
@@ -272,13 +272,13 @@ void *server_handler(void *param) {
 }
 
 /**
-* @brief Routine that handles the connection with a client.
-*
-* @param info Pointer to the \c ClientInfo structure relative to the connection
-* that has to be handled.
-*
-* @return Always a \c NULL pointer.
-*/
+ * @brief Routine that handles the connection with a client.
+ *
+ * @param info Pointer to the \c ClientInfo structure relative to the connection
+ * that has to be handled.
+ *
+ * @return Always a \c NULL pointer.
+ */
 void *client_handler(void *info) {
 	struct ClientInfo client_info = *(struct ClientInfo *)info;
 	struct Packet packet;

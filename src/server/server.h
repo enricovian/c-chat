@@ -9,9 +9,9 @@
  * @copyright Copyright (c) 2016-2017, Enrico Vianello
  */
 
-/* The server's address */
+/** The server's address */
 #define SERVERIP "localhost"
-/* Port used by the server for incoming connections */
+/** Port used by the server for incoming connections */
 #define SERVERPORT "3495"
-/* How many pending connections queue will hold */
+/** How many pending connections queue will hold */
 #define BACKLOG 8

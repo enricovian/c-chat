@@ -9,7 +9,7 @@
  * @copyright Copyright (c) 2016-2017, Enrico Vianello
  */
 
-/* Definitions of colors for terminal styling */
+/** Definitions of colors for terminal styling */
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
 #define KGRN  "\x1B[32m"

@@ -15,7 +15,7 @@
 * @brief Get the address structure correctly formatted: IPv4 or IPv6 from a
 * generic \c sockaddr structure.
 *
-* @param param The \c sockaddr struct.
+* @param sa The \c sockaddr struct.
 *
 * @return A pointer to a structure \c sin_addr (if the address is
 * IPv4) or \c sin6_addr (if the address is IPv6).

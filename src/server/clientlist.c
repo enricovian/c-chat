@@ -18,37 +18,42 @@
 #include <string.h>
 
 /**
-* @brief Compare two \c ClientInfo struct, checking if they share the same
-* connection socket.
-*
-* @param a Pointer to the first ClientInfo struct.
-* @param b Pointer to the second ClientInfo struct.
-*
-* @return \c 0 if they have the same connection socket.
-*/
+ * @brief Compare two \c ClientInfo struct, checking if they share the same
+ * connection socket.
+ *
+ * @param a
+ * Pointer to the first ClientInfo struct.
+ * @param b
+ * Pointer to the second ClientInfo struct.
+ *
+ * @return \c 0 if they have the same connection socket.
+ */
 int compare(struct ClientInfo *a, struct ClientInfo *b) {
 	return a->sockfd - b->sockfd;
 }
 
 /**
-* @brief Initialize an empty list.
-*
-* @param ll Pointer to the linked list.
-*/
+ * @brief Initialize an empty list.
+ *
+ * @param ll
+ * Pointer to the linked list.
+ */
 void list_init(struct LinkedList *ll) {
 	ll->head = ll->tail = NULL;
 	ll->size = 0;
 }
 
 /**
-* @brief Insert a new element to the list.
-*
-* @param ll Pointer to the linked list.
-* @param cl_info Pointer to the \c ClientInfo structure that will be contained
-* in the new node.
-*
-* @return \c 0 if successful, \c -1 if the list is full or an error occours.
-*/
+ * @brief Insert a new element to the list.
+ *
+ * @param ll
+ * Pointer to the linked list.
+ * @param cl_info
+ * Pointer to the \c ClientInfo structure that will be contained in the new
+ * node.
+ *
+ * @return \c 0 if successful, \c -1 if the list is full or an error occours.
+ */
 int list_insert(struct LinkedList *ll, struct ClientInfo *cl_info) {
 	if(ll->size == MAXCLIENTS) return -1; // check if the list is full
 	/* If the list is empty, create the node and make head and tail
@@ -72,14 +77,16 @@ int list_insert(struct LinkedList *ll, struct ClientInfo *cl_info) {
 }
 
 /**
-* @brief Delete a node from the list.
-*
-* @param ll Pointer to the linked list.
-* @param cl_info Pointer to the \c ClientInfo structure of the node that has to
-* be removed.
-*
-* @return \c 0 if successful, \c -1 if the list is empty or an error occours.
-*/
+ * @brief Delete a node from the list.
+ *
+ * @param ll
+ * Pointer to the linked list.
+ * @param cl_info
+ * Pointer to the \c ClientInfo structure of the node that has to
+ * be removed.
+ *
+ * @return \c 0 if successful, \c -1 if the list is empty or an error occours.
+ */
 int list_delete(struct LinkedList *ll, struct ClientInfo *cl_info) {
 	struct LLNode *curr, *tmp;
 	if(ll->head == NULL) return -1; // check if the structure is empty
@@ -117,10 +124,11 @@ int list_delete(struct LinkedList *ll, struct ClientInfo *cl_info) {
 }
 
 /**
-* @brief Print the list in a readable format.
-*
-* @param ll Pointer to the linked list.
-*/
+ * @brief Print the list in a readable format.
+ *
+ * @param ll
+ * Pointer to the linked list.
+ */
 void list_dump(struct LinkedList *ll) {
 	struct LLNode *curr;
 	struct ClientInfo *cl_info;
@@ -132,27 +140,29 @@ void list_dump(struct LinkedList *ll) {
 }
 
 /**
-* @brief Returns the size of the linked list.
-*
-* @param ll Pointer to the linked list.
-*
-* @return An \c int representing the number of nodes in the list.
-*/
+ * @brief Returns the size of the linked list.
+ *
+ * @param ll
+ * Pointer to the linked list.
+ *
+ * @return An \c int representing the number of nodes in the list.
+ */
 int list_size(struct LinkedList *ll) {
 	return ll->size;
 }
 
 /**
-* @brief Returns an array of strings containing the client's aliases.
-*
-* This method allocate the memory necessary to store the list, so make sure to
-* deallocate using the pointer returned.
-*
-* @param ll Pointer to the linked list.
-*
-* @return An array of strings containing the aliases field of the objects
-* \c ClientInfo in the list.
-*/
+ * @brief Returns an array of strings containing the client's aliases.
+ *
+ * This method allocate the memory necessary to store the list, so make sure to
+ * deallocate using the pointer returned.
+ *
+ * @param ll
+ * Pointer to the linked list.
+ *
+ * @return An array of strings containing the aliases field of the objects
+ * \c ClientInfo in the list.
+ */
 char **list_clients(struct LinkedList *ll) {
 	char ** list_str = malloc(ll->size * sizeof(char*));
 	struct LLNode *curr;
